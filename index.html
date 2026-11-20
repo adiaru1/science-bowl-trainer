@@ -17,8 +17,54 @@
 </head>
 <body class="bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 min-h-screen font-sans selection:bg-blue-500 selection:text-white transition-colors duration-200">
 
-    <!-- HOME SCREEN OVERLAY -->
-    <div id="homeScreenModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4 z-50 overflow-y-auto">
+    <!-- WELCOME / LOGIN GATEKEEPER OVERLAY -->
+    <div id="welcomeGateModal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-4 z-50 overflow-y-auto">
+        <div class="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-3xl max-w-md w-full p-8 sm:p-10 space-y-6 shadow-2xl my-8">
+            <div class="text-center space-y-2">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400 text-xs font-semibold tracking-wide uppercase border border-blue-200/50 dark:border-blue-800/50">
+                    National Science Bowl
+                </div>
+                <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">AI Trainer Arena</h1>
+                <p class="text-xs text-slate-500 dark:text-slate-400">Sign in to save your study bank and match history, or jump straight in as a guest.</p>
+            </div>
+
+            <!-- Social / Phone Login Buttons -->
+            <div class="space-y-2.5">
+                <button onclick="signInWithGoogle()" class="w-full flex items-center justify-center gap-3 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 font-semibold py-3 rounded-xl text-xs transition-all shadow-sm">
+                    <span>🌐</span> Continue with Google
+                </button>
+                <button onclick="signInWithPhone()" class="w-full flex items-center justify-center gap-3 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 font-semibold py-3 rounded-xl text-xs transition-all shadow-sm">
+                    <span>📱</span> Continue with Phone Number
+                </button>
+            </div>
+
+            <div class="relative flex py-1 items-center">
+                <div class="flex-grow border-t border-slate-200 dark:border-slate-800"></div>
+                <span class="flex-shrink mx-4 text-[10px] uppercase font-bold text-slate-400">Or with email</span>
+                <div class="flex-grow border-t border-slate-200 dark:border-slate-800"></div>
+            </div>
+
+            <!-- Email / Password Form -->
+            <div class="space-y-3">
+                <input type="email" id="gateEmail" placeholder="Email Address" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500"/>
+                <input type="password" id="gatePassword" placeholder="Password" onkeydown="if(event.key==='Enter') handleGateEmailAuth('login')" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500"/>
+                <div id="gateErrorMsg" class="hidden text-xs text-rose-500 font-semibold"></div>
+                <div class="grid grid-cols-2 gap-3 pt-1">
+                    <button onclick="handleGateEmailAuth('login')" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-xl text-xs transition-all shadow-sm">Log In</button>
+                    <button onclick="handleGateEmailAuth('register')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-xl text-xs transition-all shadow-sm">Sign Up</button>
+                </div>
+            </div>
+
+            <div class="pt-2 border-t border-slate-100 dark:border-slate-800">
+                <button onclick="continueAsGuest()" class="w-full py-3 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white bg-slate-100 dark:bg-slate-800/70 hover:bg-slate-200 dark:hover:bg-slate-800 transition-all">
+                    Continue as Guest →
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- HOME SCREEN OVERLAY (Starts hidden until Welcome Gate is passed) -->
+    <div id="homeScreenModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md hidden items-center justify-center p-4 z-50 overflow-y-auto">
         <div class="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-3xl max-w-4xl w-full p-8 sm:p-10 space-y-8 shadow-2xl shadow-blue-500/5 my-8">
             <div class="text-center space-y-3">
                 <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400 text-xs font-semibold tracking-wide uppercase border border-blue-200/50 dark:border-blue-800/50">
@@ -495,6 +541,22 @@
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
 
+        function proceedToArenaSetup() {
+            const gate = document.getElementById('welcomeGateModal');
+            if (gate && !gate.classList.contains('hidden')) {
+                gate.classList.add('hidden');
+                gate.classList.remove('flex');
+                document.getElementById('homeScreenModal').classList.remove('hidden');
+                document.getElementById('homeScreenModal').classList.add('flex');
+            }
+        }
+
+        function continueAsGuest() {
+            currentUser = null;
+            document.getElementById('authNavBtn').textContent = "👤 Guest (Log In)";
+            proceedToArenaSetup();
+        }
+
         function openAuthModal() {
             document.getElementById('authErrorMsg').classList.add('hidden');
             document.getElementById('authModal').classList.remove('hidden');
@@ -513,6 +575,7 @@
             document.getElementById('authLoggedInView').classList.remove('hidden');
             document.getElementById('authActiveUser').textContent = currentUser;
             closeAuthModal();
+            proceedToArenaSetup();
         }
 
         async function signInWithGoogle() {
@@ -553,6 +616,19 @@
             } catch (e) { showAuthError(e.message); }
         }
 
+        async function handleGateEmailAuth(action) {
+            const email = document.getElementById('gateEmail').value.trim();
+            const password = document.getElementById('gatePassword').value.trim();
+            if (!email || !password) return showAuthError("Enter email and password.");
+
+            try {
+                const res = action === 'register'
+                    ? await auth.createUserWithEmailAndPassword(email, password)
+                    : await auth.signInWithEmailAndPassword(email, password);
+                applyUserData(res.user);
+            } catch (e) { showAuthError(e.message); }
+        }
+
         async function logoutUser() {
             await auth.signOut();
             currentUser = null;
@@ -560,12 +636,18 @@
             document.getElementById('authLoggedInView').classList.add('hidden');
             document.getElementById('authLoggedOutView').classList.remove('hidden');
             closeAuthModal();
+            document.getElementById('welcomeGateModal').classList.remove('hidden');
+            document.getElementById('welcomeGateModal').classList.add('flex');
         }
 
         function showAuthError(msg) {
-            const errEl = document.getElementById('authErrorMsg');
-            errEl.textContent = msg;
-            errEl.classList.remove('hidden');
+            ['authErrorMsg', 'gateErrorMsg'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.textContent = msg;
+                    el.classList.remove('hidden');
+                }
+            });
         }
 
         auth.onAuthStateChanged(user => {
@@ -1335,6 +1417,7 @@
         }
 
         document.addEventListener('keydown', (e) => {
+            if (!document.getElementById('welcomeGateModal').classList.contains('hidden')) return;
             if (!document.getElementById('homeScreenModal').classList.contains('hidden')) return;
             if (!document.getElementById('sessionReviewModal').classList.contains('hidden')) return;
             if (!document.getElementById('studyBankModal').classList.contains('hidden')) return;
