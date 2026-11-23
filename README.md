@@ -1,4 +1,3 @@
-<img width="1349" height="605" alt="App Screenshot" src="https://github.com/user-attachments/assets/885205a0-f5a7-474f-82ef-31d433a08305" />
 
 
 Try app here: 
