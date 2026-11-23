@@ -1,0 +1,3340 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Science Bowl Trainer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
+                        mono: ['"JetBrains Mono"', 'monospace'],
+                    },
+                    keyframes: {
+                        bubblePop: {
+                            '0%': { opacity: '0', transform: 'translateY(6px) scale(0.96)' },
+                            '100%': { opacity: '1', transform: 'translateY(0) scale(1)' }
+                        }
+                    },
+                    animation: {
+                        bubblePop: 'bubblePop 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards'
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+</head>
+<body class="bg-slate-100 dark:bg-slate-900 text-slate-900 dark:text-slate-100 min-h-screen font-sans selection:bg-indigo-500 selection:text-white transition-colors duration-150">
+
+    <!-- Welcome / Auth Gate -->
+    <div id="welcomeGateModal" class="fixed inset-0 bg-slate-950/80 dark:bg-slate-950/90 backdrop-blur-sm flex items-center justify-center p-4 z-50 overflow-y-auto">
+        <div class="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 rounded-lg max-w-md w-full p-7 space-y-5 shadow-xl my-8">
+            <div class="space-y-1.5 border-b border-slate-200 dark:border-slate-800 pb-4">
+                <div class="text-[11px] font-bold tracking-widest uppercase text-indigo-600 dark:text-indigo-400">
+                    Science Bowl Trainer
+                </div>
+                <h1 class="text-2xl font-extrabold tracking-tight text-slate-900 dark:text-white">Welcome</h1>
+                <p class="text-xs text-slate-600 dark:text-slate-400">Sign in to save your starred questions and match logs, or enter as a guest.</p>
+            </div>
+
+            <div class="space-y-2">
+                <button onclick="signInWithGoogle()" class="w-full flex items-center justify-center bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 border border-slate-300 dark:border-slate-700 font-semibold py-2.5 rounded-md text-xs transition-colors">
+                    Continue with Google
+                </button>
+                <button onclick="signInWithPhone()" class="w-full flex items-center justify-center bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 border border-slate-300 dark:border-slate-700 font-semibold py-2.5 rounded-md text-xs transition-colors">
+                    Continue with Phone Number
+                </button>
+            </div>
+
+            <div class="relative flex py-1 items-center">
+                <div class="flex-grow border-t border-slate-300 dark:border-slate-800"></div>
+                <span class="flex-shrink mx-3 text-[10px] uppercase font-bold tracking-wider text-slate-500">Email</span>
+                <div class="flex-grow border-t border-slate-300 dark:border-slate-800"></div>
+            </div>
+
+            <div class="space-y-2.5">
+                <input type="email" id="gateEmail" placeholder="Email Address" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-md px-3.5 py-2 text-xs focus:outline-none focus:border-indigo-500 text-slate-900 dark:text-slate-100"/>
+                <input type="password" id="gatePassword" placeholder="Password" onkeydown="if(event.key==='Enter') handleGateEmailAuth('login')" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-md px-3.5 py-2 text-xs focus:outline-none focus:border-indigo-500 text-slate-900 dark:text-slate-100"/>
+                <div id="gateErrorMsg" class="hidden text-xs text-rose-600 dark:text-rose-400 font-semibold"></div>
+                <div class="grid grid-cols-2 gap-2.5 pt-1">
+                    <button onclick="handleGateEmailAuth('login')" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2 rounded-md text-xs transition-colors">Log In</button>
+                    <button onclick="handleGateEmailAuth('register')" class="bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 font-bold py-2 rounded-md text-xs transition-colors">Sign Up</button>
+                </div>
+            </div>
+
+            <div class="pt-3 border-t border-slate-200 dark:border-slate-800">
+                <button onclick="continueAsGuest()" class="w-full py-2.5 rounded-md text-xs font-bold text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 transition-colors">
+                    Continue as Guest
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Arena Setup Modal -->
+    <div id="homeScreenModal" class="fixed inset-0 bg-slate-950/75 dark:bg-slate-950/85 backdrop-blur-sm hidden items-center justify-center p-4 z-50 overflow-y-auto">
+        <div class="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 rounded-lg max-w-4xl w-full p-7 sm:p-9 space-y-7 shadow-2xl my-8">
+            <div class="border-b border-slate-200 dark:border-slate-800 pb-4 space-y-1">
+                <div class="text-[11px] font-bold tracking-widest uppercase text-indigo-600 dark:text-indigo-400">
+                    Science Bowl Trainer
+                </div>
+                <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">Setup</h1>
+                <p class="text-xs text-slate-600 dark:text-slate-400">Select division and difficulty.</p>
+            </div>
+
+            <div class="space-y-2.5">
+                <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400">Division</label>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                    <button id="divBtnMS" onclick="selectDivision('Middle School')" class="p-4 rounded-md border-2 text-left transition-colors border-slate-300 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 hover:border-indigo-500">
+                        <div class="font-bold text-sm text-slate-900 dark:text-slate-100">Middle School</div>
+                    </button>
+                    <button id="divBtnHS" onclick="selectDivision('High School')" class="p-4 rounded-md border-2 text-left transition-colors border-indigo-600 dark:border-indigo-500 bg-indigo-50 dark:bg-indigo-950/40">
+                        <div class="font-bold text-sm text-indigo-700 dark:text-indigo-400">High School</div>
+                    </button>
+                </div>
+            </div>
+
+            <div class="space-y-2.5">
+                <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400">Difficulty</label>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+                    <button id="diffBtnBeginner" onclick="selectDifficulty('Beginner')" class="diff-card p-4 rounded-md border-2 text-left transition-colors border-slate-300 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 hover:border-indigo-500">
+                        <span class="font-bold text-sm text-emerald-600 dark:text-emerald-400">Beginner</span>
+                    </button>
+                    <button id="diffBtnIntermediate" onclick="selectDifficulty('Intermediate')" class="diff-card p-4 rounded-md border-2 text-left transition-colors border-indigo-600 dark:border-indigo-500 bg-indigo-50 dark:bg-indigo-950/40">
+                        <span class="font-bold text-sm text-indigo-700 dark:text-indigo-400">Intermediate</span>
+                    </button>
+                    <button id="diffBtnAdvanced" onclick="selectDifficulty('Advanced')" class="diff-card p-4 rounded-md border-2 text-left transition-colors border-slate-300 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 hover:border-indigo-500">
+                        <span class="font-bold text-sm text-purple-600 dark:text-purple-400">Advanced</span>
+                    </button>
+                    <button id="diffBtnExpert" onclick="selectDifficulty('Expert')" class="diff-card p-4 rounded-md border-2 text-left transition-colors border-slate-300 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 hover:border-indigo-500">
+                        <span class="font-bold text-sm text-rose-600 dark:text-rose-400">Expert</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="flex justify-end pt-2 border-t border-slate-200 dark:border-slate-800">
+                <button onclick="enterAppFromHome()" class="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-500 text-white font-bold px-7 py-3 rounded-md transition-colors text-xs sm:text-sm tracking-wide">
+                    Start
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation Bar -->
+    <nav class="sticky top-0 z-40 bg-white dark:bg-slate-900 border-b border-slate-300 dark:border-slate-800 px-5 py-3.5 flex flex-wrap justify-between items-center gap-3">
+        <div class="flex items-center gap-3 flex-wrap">
+            <button id="backScreenBtn" onclick="goBackScreen()" class="px-3 py-1.5 rounded-md text-xs font-semibold bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 border border-slate-300 dark:border-slate-700 transition-colors">
+                Back
+            </button>
+            <span class="font-extrabold text-base tracking-tight text-slate-900 dark:text-white">Science Bowl Trainer</span>
+            <button id="activeLevelBadge" onclick="openHomeScreen()" class="text-xs font-semibold px-3 py-1 rounded-md bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 border border-indigo-300 dark:border-indigo-800 hover:border-indigo-500 transition-colors">
+                High School - Intermediate
+            </button>
+        </div>
+        <div class="flex items-center gap-2.5 flex-wrap">
+            <button id="authNavBtn" onclick="openAuthModal()" class="px-3 py-1.5 rounded-md text-xs font-semibold bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 border border-slate-300 dark:border-slate-700 transition-colors">
+                Log In
+            </button>
+            <button onclick="openStudyBankModal()" class="px-3 py-1.5 rounded-md text-xs font-semibold bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 border border-slate-300 dark:border-slate-700 transition-colors">
+                Starred (<span id="studyBankCount">0</span>)
+            </button>
+            <button onclick="openLeaderboardModal()" class="px-3 py-1.5 rounded-md text-xs font-semibold bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 border border-slate-300 dark:border-slate-700 transition-colors">
+                Match Log
+            </button>
+            <label class="flex items-center gap-2 text-xs font-semibold cursor-pointer bg-slate-200 dark:bg-slate-800 px-3 py-1.5 rounded-md border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-200">
+                <input type="checkbox" id="ttsToggle" class="rounded text-indigo-600 dark:text-indigo-500 focus:ring-indigo-400 w-3.5 h-3.5">
+                Read Aloud
+            </label>
+            <div class="flex bg-slate-200 dark:bg-slate-800 p-0.5 rounded-md border border-slate-300 dark:border-slate-700">
+                <button id="tabSolo" onclick="switchMode('solo')" class="px-3 py-1 rounded text-xs font-bold bg-indigo-600 text-white transition-colors">Solo</button>
+                <button id="tabBot" onclick="switchMode('bot')" class="px-3 py-1 rounded text-xs font-bold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">Play vs. Bot</button>
+                <button id="tabContest" onclick="switchMode('contest')" class="px-3 py-1 rounded text-xs font-bold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">Match Room</button>
+            </div>
+            <button onclick="toggleInstructions()" class="px-3 py-1.5 rounded-md text-xs font-semibold bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 border border-slate-300 dark:border-slate-700 transition-colors">Help</button>
+            <button onclick="toggleDarkMode()" class="px-3 py-1.5 rounded-md text-xs font-semibold bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 border border-slate-300 dark:border-slate-700 transition-colors">Theme</button>
+        </div>
+    </nav>
+
+    <!-- Modals (Auth, Instructions, Session Review, Starred, Leaderboard) -->
+    <div id="authModal" class="fixed inset-0 bg-slate-950/75 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
+        <div class="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 rounded-lg max-w-md w-full p-7 space-y-5 shadow-2xl">
+            <div class="flex justify-between items-center border-b border-slate-200 dark:border-slate-800 pb-3">
+                <h3 class="text-base font-bold text-slate-900 dark:text-white">Account</h3>
+                <button onclick="closeAuthModal()" class="text-slate-500 hover:text-slate-900 dark:hover:text-white text-xs font-bold uppercase">Close</button>
+            </div>
+            <div id="authLoggedOutView" class="space-y-4">
+                <p class="text-xs text-slate-600 dark:text-slate-400">Sign in to sync your data.</p>
+                <div class="space-y-2">
+                    <button onclick="signInWithGoogle()" class="w-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 border border-slate-300 dark:border-slate-700 font-semibold py-2 rounded-md text-xs transition-colors">
+                        Continue with Google
+                    </button>
+                    <button onclick="signInWithPhone()" class="w-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 border border-slate-300 dark:border-slate-700 font-semibold py-2 rounded-md text-xs transition-colors">
+                        Continue with Phone Number
+                    </button>
+                </div>
+                <div class="relative flex py-1 items-center">
+                    <div class="flex-grow border-t border-slate-300 dark:border-slate-800"></div>
+                    <span class="flex-shrink mx-3 text-[10px] uppercase font-bold text-slate-500">Email</span>
+                    <div class="flex-grow border-t border-slate-300 dark:border-slate-800"></div>
+                </div>
+                <div class="space-y-2.5">
+                    <input type="email" id="authEmail" placeholder="Email Address" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-md px-3.5 py-2 text-xs focus:outline-none focus:border-indigo-500 text-slate-900 dark:text-slate-100"/>
+                    <input type="password" id="authPassword" placeholder="Password" onkeydown="if(event.key==='Enter') handleEmailAuth('login')" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-md px-3.5 py-2 text-xs focus:outline-none focus:border-indigo-500 text-slate-900 dark:text-slate-100"/>
+                </div>
+                <div id="authErrorMsg" class="hidden text-xs text-rose-600 dark:text-rose-400 font-semibold"></div>
+                <div class="grid grid-cols-2 gap-2.5 pt-1">
+                    <button onclick="handleEmailAuth('login')" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2 rounded-md text-xs transition-colors">Log In</button>
+                    <button onclick="handleEmailAuth('register')" class="bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 font-bold py-2 rounded-md text-xs transition-colors">Sign Up</button>
+                </div>
+            </div>
+            <div id="authLoggedInView" class="hidden space-y-4">
+                <div class="p-4 rounded-md bg-slate-100 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-xs space-y-1">
+                    <div class="text-slate-500 uppercase font-bold">Signed in as</div>
+                    <div id="authActiveUser" class="text-sm font-extrabold text-indigo-600 dark:text-indigo-400"></div>
+                    <div class="text-emerald-600 dark:text-emerald-400 font-medium pt-1">Sync active</div>
+                </div>
+                <button onclick="logoutUser()" class="w-full bg-rose-600 hover:bg-rose-500 text-white font-bold py-2 rounded-md text-xs transition-colors">Log Out</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="instructionsModal" class="fixed inset-0 bg-slate-950/75 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
+        <div class="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 rounded-lg max-w-lg w-full p-7 space-y-5 shadow-2xl">
+            <div class="flex justify-between items-center border-b border-slate-200 dark:border-slate-800 pb-3">
+                <h3 class="text-base font-bold text-slate-900 dark:text-white">Shortcuts & Rules</h3>
+                <button onclick="toggleInstructions()" class="text-slate-500 hover:text-slate-900 dark:hover:text-white text-xs font-bold uppercase">Close</button>
+            </div>
+            <ul class="list-disc list-inside space-y-2.5 text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
+                <li><strong>Voice Answer:</strong> Press <code class="bg-slate-200 dark:bg-slate-800 px-1.5 py-0.5 rounded font-mono text-xs">V</code> after buzzing.</li>
+                <li><strong>Play vs. Bot:</strong> Race seasonal AI opponents on the buzzer. Watch out for early negs (-4) or rapid steals!</li>
+                <li><strong>Starred Cards:</strong> Click <strong>Star</strong> to save questions to your review deck.</li>
+                <li><strong>Shortcuts:</strong> <code class="bg-slate-200 dark:bg-slate-800 px-1.5 py-0.5 rounded font-mono text-xs">Space</code> to buzz, <code class="bg-slate-200 dark:bg-slate-800 px-1.5 py-0.5 rounded font-mono text-xs">V</code> to speak, <code class="bg-slate-200 dark:bg-slate-800 px-1.5 py-0.5 rounded font-mono text-xs">B</code> for bonus, <code class="bg-slate-200 dark:bg-slate-800 px-1.5 py-0.5 rounded font-mono text-xs">N</code> for next.</li>
+            </ul>
+            <div class="flex justify-end pt-2">
+                <button onclick="toggleInstructions()" class="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold px-5 py-2 rounded-md transition-colors">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="sessionReviewModal" class="fixed inset-0 bg-slate-950/75 backdrop-blur-sm hidden items-center justify-center p-4 z-50 overflow-y-auto">
+        <div class="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 rounded-lg max-w-3xl w-full p-7 space-y-5 shadow-2xl my-8 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center border-b border-slate-200 dark:border-slate-800 pb-3">
+                <div>
+                    <h3 id="reviewModalTitle" class="text-base font-bold text-indigo-600 dark:text-indigo-400">Session Stats</h3>
+                    <p id="reviewModalSubtitle" class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Summary</p>
+                </div>
+                <button onclick="closeSessionReview()" class="px-3 py-1.5 rounded-md text-xs font-semibold bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-200">Close</button>
+            </div>
+            <div id="sessionReviewBody" class="space-y-5 text-sm text-slate-800 dark:text-slate-200"></div>
+        </div>
+    </div>
+
+    <div id="studyBankModal" class="fixed inset-0 bg-slate-950/75 backdrop-blur-sm hidden items-center justify-center p-4 z-50 overflow-y-auto">
+        <div class="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 rounded-lg max-w-3xl w-full p-7 space-y-5 shadow-2xl my-8 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center border-b border-slate-200 dark:border-slate-800 pb-3">
+                <div>
+                    <h3 class="text-base font-bold text-indigo-600 dark:text-indigo-400">Starred Cards</h3>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Saved questions</p>
+                </div>
+                <button onclick="closeStudyBankModal()" class="px-3 py-1.5 rounded-md text-xs font-semibold bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-200">Close</button>
+            </div>
+            <div id="studyBankBody" class="space-y-3"></div>
+        </div>
+    </div>
+
+    <div id="leaderboardModal" class="fixed inset-0 bg-slate-950/75 backdrop-blur-sm hidden items-center justify-center p-4 z-50 overflow-y-auto">
+        <div class="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 rounded-lg max-w-3xl w-full p-7 space-y-5 shadow-2xl my-8 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center border-b border-slate-200 dark:border-slate-800 pb-3">
+                <div>
+                    <h3 class="text-base font-bold text-indigo-600 dark:text-indigo-400">Match Log</h3>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">History</p>
+                </div>
+                <div class="flex gap-2">
+                    <button onclick="clearLeaderboard()" class="px-3 py-1.5 rounded-md text-xs font-semibold bg-rose-100 dark:bg-rose-950 hover:bg-rose-200 text-rose-700 dark:text-rose-300 border border-rose-300 dark:border-rose-800">Clear</button>
+                    <button onclick="closeLeaderboardModal()" class="px-3 py-1.5 rounded-md text-xs font-semibold bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-200">Close</button>
+                </div>
+            </div>
+            <div id="leaderboardBody" class="space-y-3"></div>
+        </div>
+    </div>
+
+    <!-- Main Content Container -->
+    <div class="max-w-7xl mx-auto p-4 sm:p-6 grid grid-cols-1 lg:grid-cols-4 gap-5">
+
+        <div class="lg:col-span-3 space-y-5">
+
+            <!-- PDF Upload Bar -->
+            <div class="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 rounded-lg p-4 flex flex-wrap items-center justify-between gap-4">
+                <div class="text-xs text-slate-700 dark:text-slate-300">
+                    <strong class="text-slate-900 dark:text-white font-bold">PDF Upload:</strong> Add custom packets
+                </div>
+                <form id="uploadForm" class="flex items-center gap-2">
+                    <input type="file" id="pdfFiles" multiple accept=".pdf" class="text-xs text-slate-600 dark:text-slate-400 file:mr-2 file:py-1.5 file:px-3 file:rounded-md file:border file:border-slate-300 dark:file:border-slate-700 file:bg-slate-100 dark:file:bg-slate-800 file:text-slate-800 dark:file:text-slate-200 hover:file:bg-slate-200 cursor-pointer font-semibold"/>
+                    <button type="submit" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-3.5 py-2 rounded-md transition-colors">Upload</button>
+                </form>
+            </div>
+
+            <!-- Settings Bar -->
+            <div class="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 rounded-lg p-4 space-y-3">
+                <div class="flex justify-between items-center">
+                    <span class="text-[11px] font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400">Settings</span>
+                    <span id="settingsLockBadge" class="hidden text-xs text-indigo-600 dark:text-indigo-400 font-semibold">Locked by Host</span>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-5 gap-2.5">
+                    <div>
+                        <label class="block text-[10px] text-slate-600 dark:text-slate-400 mb-1 font-bold uppercase tracking-wider">Category</label>
+                        <select id="categorySelect" onchange="onSettingsChange()" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-md px-3 py-2 text-xs text-slate-900 dark:text-slate-200 disabled:opacity-60 focus:outline-none focus:border-indigo-500">
+                            <option value="All Topics">All Topics</option>
+                            <option value="Weakness Focus">Weakest Category</option>
+                            <option value="Biology">Biology</option>
+                            <option value="Chemistry">Chemistry</option>
+                            <option value="Physics">Physics</option>
+                            <option value="Mathematics">Mathematics</option>
+                            <option value="Earth and Space">Earth and Space</option>
+                            <option value="Energy">Energy</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-[10px] text-slate-600 dark:text-slate-400 mb-1 font-bold uppercase tracking-wider">Format</label>
+                        <select id="typeSelect" onchange="onSettingsChange()" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-md px-3 py-2 text-xs text-slate-900 dark:text-slate-200 disabled:opacity-60 focus:outline-none focus:border-indigo-500">
+                            <option value="Combined">Toss-up + Bonus</option>
+                            <option value="Toss-up">Toss-up Only</option>
+                            <option value="Bonus">Bonus Only</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-[10px] text-slate-600 dark:text-slate-400 mb-1 font-bold uppercase tracking-wider">Source</label>
+                        <select id="sourceSelect" onchange="onSettingsChange()" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-md px-3 py-2 text-xs text-slate-900 dark:text-slate-200 disabled:opacity-60 focus:outline-none focus:border-indigo-500">
+                            <option value="hybrid">Dynamic Bank</option>
+                            <option value="exact">PDF Only</option>
+                            <option value="mix">Mixed</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-[10px] text-slate-600 dark:text-slate-400 mb-1 font-bold uppercase tracking-wider">Clock</label>
+                        <select id="timerModeSelect" onchange="onSettingsChange()" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-md px-3 py-2 text-xs text-slate-900 dark:text-slate-200 disabled:opacity-60 focus:outline-none focus:border-indigo-500">
+                            <option value="timed">Timed</option>
+                            <option value="untimed">Untimed</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-[10px] text-slate-600 dark:text-slate-400 mb-1 font-bold uppercase tracking-wider">Penalty</label>
+                        <select id="penaltiesSelect" onchange="onSettingsChange()" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-md px-3 py-2 text-xs text-slate-900 dark:text-slate-200 disabled:opacity-60 focus:outline-none focus:border-indigo-500">
+                            <option value="yes">-4 Penalty</option>
+                            <option value="no">No Penalty</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SOLO VIEW -->
+            <div id="soloView" class="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 rounded-lg p-6 space-y-5">
+                <div class="flex justify-between items-center flex-wrap gap-2.5">
+                    <div class="flex items-center gap-2.5 flex-wrap">
+                        <span id="soloBadge" class="text-xs font-bold uppercase tracking-wider px-3 py-1 rounded bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-700">Standby</span>
+                        <span id="timerDisplay" class="hidden text-xs font-mono font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950 px-3 py-1 rounded border border-indigo-300 dark:border-indigo-800">
+                            <span id="timerStatusText">Reading...</span>
+                        </span>
+                    </div>
+                    <div class="flex gap-2 flex-wrap">
+                        <button id="bookmarkBtn" onclick="toggleBookmarkCurrent()" class="hidden bg-slate-200 hover:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 font-semibold px-3.5 py-2 rounded-md transition-colors text-xs border border-slate-300 dark:border-slate-700">
+                            Star
+                        </button>
+                        <button onclick="openSoloSessionReview()" class="bg-slate-200 hover:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 font-semibold px-3.5 py-2 rounded-md transition-colors text-xs border border-slate-300 dark:border-slate-700">
+                            Stats
+                        </button>
+                        <button id="soloRevealBtn" onclick="revealSoloAnswer()" class="hidden bg-slate-200 hover:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 font-semibold px-3.5 py-2 rounded-md transition-colors text-xs border border-slate-300 dark:border-slate-700">
+                            Answer
+                        </button>
+                        <button id="soloBonusBtn" onclick="loadSoloBonus()" class="hidden bg-emerald-600 hover:bg-emerald-500 text-white font-semibold px-3.5 py-2 rounded-md transition-colors text-xs">
+                            Bonus (+10) [B]
+                        </button>
+                        <button id="soloNextBtn" onclick="loadSoloQuestion()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold px-4 py-2 rounded-md transition-colors text-xs">
+                            Next (N)
+                        </button>
+                    </div>
+                </div>
+
+                <div id="soloQuestionBox" class="min-h-[160px] text-base sm:text-lg leading-relaxed text-slate-900 dark:text-slate-100 whitespace-pre-wrap font-medium p-5 rounded-md bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
+                    Press <code class="bg-slate-200 dark:bg-slate-800 px-1.5 py-0.5 rounded font-mono text-sm text-slate-800 dark:text-slate-200">N</code> or click <strong>Next</strong> to start.
+                </div>
+
+                <div class="pt-3 border-t border-slate-200 dark:border-slate-800 space-y-3">
+                    <div class="flex gap-2.5">
+                        <button id="soloBuzzBtn" onclick="soloBuzz()" class="bg-rose-600 hover:bg-rose-500 disabled:opacity-40 text-white font-extrabold px-5 py-2.5 rounded-md tracking-wider uppercase text-xs transition-colors">
+                            Buzz (Space)
+                        </button>
+                        <input type="text" id="soloAnswerInput" disabled placeholder="Buzz first..." 
+                            oninput="handleUserTyping(false)"
+                            onkeydown="if(event.key==='Enter') submitSoloAnswer()"
+                            class="flex-1 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-md px-4 py-2.5 text-xs sm:text-sm text-slate-900 dark:text-slate-100 disabled:opacity-50 focus:outline-none focus:border-indigo-500"/>
+                        <button id="soloMicBtn" disabled onclick="startVoiceRecognition('solo')" class="bg-slate-200 hover:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 disabled:opacity-40 text-slate-800 dark:text-slate-200 font-semibold px-3.5 py-2.5 rounded-md transition-colors text-xs border border-slate-300 dark:border-slate-700">
+                            Speak (V)
+                        </button>
+                        <button id="soloSubmitBtn" disabled onclick="submitSoloAnswer()" class="bg-emerald-600 hover:bg-emerald-500 disabled:opacity-40 text-white font-bold px-5 py-2.5 rounded-md transition-colors text-xs">
+                            Submit
+                        </button>
+                    </div>
+                    <div id="soloFeedback" class="hidden p-4 rounded-md text-xs sm:text-sm font-medium"></div>
+                </div>
+            </div>
+
+            <!-- PLAY VS WINTER BOTS VIEW -->
+            <div id="botView" class="hidden space-y-5">
+
+                <!-- 1. Bot Character Selection Screen -->
+                <div id="botSelectionScreen" class="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 rounded-lg p-6 space-y-5">
+                    <div class="flex flex-wrap justify-between items-center gap-3 border-b border-slate-200 dark:border-slate-800 pb-4">
+                        <div>
+                            <div class="text-[11px] font-bold tracking-widest uppercase text-indigo-600 dark:text-indigo-400">Seasonal Event</div>
+                            <h2 class="text-xl font-extrabold tracking-tight text-slate-900 dark:text-white">Play vs. Winter Bots</h2>
+                            <p class="text-xs text-slate-600 dark:text-slate-400 mt-0.5">Select a seasonal opponent to begin a 1v1 Science Bowl match.</p>
+                        </div>
+                        <div class="flex items-center gap-2 bg-slate-50 dark:bg-slate-950 px-3 py-2 rounded-md border border-slate-300 dark:border-slate-800">
+                            <label for="botMatchTargetSelect" class="text-[11px] font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400">Match Length:</label>
+                            <select id="botMatchTargetSelect" class="bg-transparent text-xs font-bold text-indigo-600 dark:text-indigo-400 focus:outline-none">
+                                <option value="5">5 Toss-ups (Blitz)</option>
+                                <option value="10" selected>10 Toss-ups (Half)</option>
+                                <option value="20">20 Toss-ups (Full)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div id="botCharacterGrid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- Rendered dynamically by renderBotSelectionCards() -->
+                    </div>
+                </div>
+
+                <!-- 2. Active Bot Match Screen -->
+                <div id="botMatchScreen" class="hidden bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 rounded-lg p-6 space-y-5">
+                    
+                    <!-- Chess.com-style Trash-Talk Header -->
+                    <div class="flex items-start gap-4 p-4 rounded-lg bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800">
+                        <div class="relative shrink-0">
+                            <img id="activeBotAvatar" src="" alt="Bot Avatar" class="w-16 h-16 sm:w-20 sm:h-20 rounded-lg object-cover bg-slate-200 dark:bg-slate-800 border-2 border-indigo-500 shadow-sm"/>
+                            <span id="activeBotBadgeRating" class="absolute -bottom-2 left-1/2 -translate-x-1/2 whitespace-nowrap px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-indigo-600 text-white shadow">
+                                50%
+                            </span>
+                        </div>
+                        <div class="flex-1 min-w-0 space-y-1.5">
+                            <div class="flex flex-wrap items-center justify-between gap-2">
+                                <div class="flex items-center gap-2">
+                                    <span id="activeBotName" class="font-extrabold text-sm sm:text-base text-slate-900 dark:text-white">Rudolph</span>
+                                    <span id="activeBotTitle" class="text-[11px] font-semibold px-2 py-0.5 rounded bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300">Beginner</span>
+                                </div>
+                                <span id="botRoundCounter" class="text-xs font-mono font-bold text-slate-500 dark:text-slate-400">
+                                    Toss-up 1 / 10
+                                </span>
+                            </div>
+
+                            <!-- Speech Bubble -->
+                            <div class="relative bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-4 py-2.5 shadow-sm">
+                                <div class="hidden sm:block absolute top-3 -left-2 w-3 h-3 bg-white dark:bg-slate-900 border-l border-b border-slate-300 dark:border-slate-700 rotate-45"></div>
+                                <p id="botChatBubbleText" class="text-xs sm:text-sm font-medium text-slate-800 dark:text-slate-200 leading-snug">
+                                    "G-gosh, good luck! Please don't buzz too fast!"
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Match Controls Bar -->
+                    <div class="flex justify-between items-center flex-wrap gap-2.5">
+                        <div class="flex items-center gap-2.5 flex-wrap">
+                            <span id="botQBadge" class="text-xs font-bold uppercase tracking-wider px-3 py-1 rounded bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-700">Standby</span>
+                            <span id="botTimerDisplay" class="hidden text-xs font-mono font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950 px-3 py-1 rounded border border-indigo-300 dark:border-indigo-800">
+                                <span id="botTimerStatusText">Reading...</span>
+                            </span>
+                            <span id="botBuzzedBanner" class="hidden text-xs font-extrabold uppercase tracking-wider px-3 py-1 rounded bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-700 animate-pulse">
+                                Bot buzzed!
+                            </span>
+                            <span id="botNegBadge" class="hidden text-xs font-extrabold uppercase tracking-wider px-3 py-1 rounded bg-rose-100 dark:bg-rose-950 text-rose-700 dark:text-rose-300 border border-rose-300 dark:border-rose-700">
+                                NEG! (-4)
+                            </span>
+                        </div>
+                        <div class="flex gap-2 flex-wrap">
+                            <button onclick="exitBotMatch()" class="bg-slate-200 hover:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 font-semibold px-3.5 py-2 rounded-md transition-colors text-xs border border-slate-300 dark:border-slate-700">
+                                Change Bot
+                            </button>
+                            <button id="botBonusBtn" onclick="loadBotModePlayerBonus()" class="hidden bg-emerald-600 hover:bg-emerald-500 text-white font-semibold px-3.5 py-2 rounded-md transition-colors text-xs">
+                                Bonus (+10) [B]
+                            </button>
+                            <button id="botNextBtn" onclick="loadNextBotTossup()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold px-4 py-2 rounded-md transition-colors text-xs">
+                                Next (N)
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Progressive Question Reader Box -->
+                    <div id="botQuestionBox" class="min-h-[160px] text-base sm:text-lg leading-relaxed text-slate-900 dark:text-slate-100 whitespace-pre-wrap font-medium p-5 rounded-md bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
+                        Press <code class="bg-slate-200 dark:bg-slate-800 px-1.5 py-0.5 rounded font-mono text-sm text-slate-800 dark:text-slate-200">N</code> or click <strong>Next</strong> to start the match.
+                    </div>
+
+                    <!-- Player Buzzer & Answer Controls -->
+                    <div class="pt-3 border-t border-slate-200 dark:border-slate-800 space-y-3">
+                        <div class="flex gap-2.5">
+                            <button id="botPlayerBuzzBtn" onclick="playerBotBuzz()" class="bg-rose-600 hover:bg-rose-500 disabled:opacity-40 text-white font-extrabold px-5 py-2.5 rounded-md tracking-wider uppercase text-xs transition-colors">
+                                Buzz (Space)
+                            </button>
+                            <input type="text" id="botAnswerInput" disabled placeholder="Buzz before the bot..." 
+                                oninput="handleBotPlayerTyping()"
+                                onkeydown="if(event.key==='Enter') submitBotPlayerAnswer()"
+                                class="flex-1 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-md px-4 py-2.5 text-xs sm:text-sm text-slate-900 dark:text-slate-100 disabled:opacity-50 focus:outline-none focus:border-indigo-500"/>
+                            <button id="botMicBtn" disabled onclick="startVoiceRecognition('bot')" class="bg-slate-200 hover:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 disabled:opacity-40 text-slate-800 dark:text-slate-200 font-semibold px-3.5 py-2.5 rounded-md transition-colors text-xs border border-slate-300 dark:border-slate-700">
+                                Speak (V)
+                            </button>
+                            <button id="botSubmitBtn" disabled onclick="submitBotPlayerAnswer()" class="bg-emerald-600 hover:bg-emerald-500 disabled:opacity-40 text-white font-bold px-5 py-2.5 rounded-md transition-colors text-xs">
+                                Submit
+                            </button>
+                        </div>
+                        <div id="botFeedback" class="hidden p-4 rounded-md text-xs sm:text-sm font-medium"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CONTEST / MATCH ROOM VIEW -->
+            <div id="contestView" class="hidden space-y-5">
+                <div id="contestLobby" class="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 rounded-lg p-6 grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div class="bg-slate-50 dark:bg-slate-950 p-5 rounded-md border border-slate-300 dark:border-slate-800 space-y-3.5">
+                        <h2 class="text-sm font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wide">Host Room</h2>
+                        <p class="text-xs text-slate-600 dark:text-slate-400">Uses current settings.</p>
+                        <div class="space-y-2.5">
+                            <input type="text" id="createTeamName" placeholder="Team Name" class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 rounded-md px-3.5 py-2 text-xs text-slate-900 dark:text-slate-100 focus:outline-none focus:border-indigo-500"/>
+                            <input type="text" id="createPlayerName" placeholder="Your Name" class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 rounded-md px-3.5 py-2 text-xs text-slate-900 dark:text-slate-100 focus:outline-none focus:border-indigo-500"/>
+                        </div>
+                        <button onclick="createContest()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2.5 rounded-md transition-colors text-xs">Create Room</button>
+                    </div>
+
+                    <div class="bg-slate-50 dark:bg-slate-950 p-5 rounded-md border border-slate-300 dark:border-slate-800 space-y-3.5">
+                        <h2 class="text-sm font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wide">Join Room</h2>
+                        <p class="text-xs text-slate-600 dark:text-slate-400">Enter room code and team name.</p>
+                        <div class="grid grid-cols-2 gap-2">
+                            <input type="text" id="joinContestId" placeholder="Room Code" class="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 rounded-md px-3.5 py-2 text-xs uppercase font-mono text-slate-900 dark:text-slate-100 focus:outline-none focus:border-indigo-500"/>
+                            <input type="text" id="joinPassword" placeholder="PIN" class="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 rounded-md px-3.5 py-2 text-xs font-mono text-slate-900 dark:text-slate-100 focus:outline-none focus:border-indigo-500"/>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <input type="text" id="joinTeamName" placeholder="Team Name" class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 rounded-md px-3.5 py-2 text-xs text-slate-900 dark:text-slate-100 focus:outline-none focus:border-indigo-500"/>
+                            <input type="text" id="joinPlayerName" placeholder="Your Name" class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 rounded-md px-3.5 py-2 text-xs text-slate-900 dark:text-slate-100 focus:outline-none focus:border-indigo-500"/>
+                        </div>
+                        <button onclick="joinContest()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 rounded-md transition-colors text-xs">Join Room</button>
+                    </div>
+                </div>
+
+                <div id="contestRoom" class="hidden bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 rounded-lg p-6 space-y-5">
+                    <div class="flex flex-wrap justify-between items-center gap-3 pb-4 border-b border-slate-200 dark:border-slate-800">
+                        <div class="flex items-center gap-3 flex-wrap">
+                            <div class="flex items-center gap-2 bg-slate-50 dark:bg-slate-950 px-3 py-1.5 rounded-md border border-slate-300 dark:border-slate-800 text-xs">
+                                <span class="text-slate-500 font-bold">ROOM:</span>
+                                <span id="displayContestId" class="font-mono font-bold text-indigo-600 dark:text-indigo-400">------</span>
+                                <span class="text-slate-300 dark:text-slate-700">|</span>
+                                <span class="text-slate-500 font-bold">PIN:</span>
+                                <span id="displayPassword" class="font-mono font-bold text-emerald-600 dark:text-emerald-400">----</span>
+                                <span class="text-slate-300 dark:text-slate-700">|</span>
+                                <span class="text-slate-500 font-bold">PLAYER:</span>
+                                <span id="displayMyPlayerInfo" class="font-bold text-slate-800 dark:text-slate-200">---</span>
+                            </div>
+                            <span id="contestTimerDisplay" class="hidden text-xs font-mono font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950 px-3 py-1 rounded border border-indigo-300 dark:border-indigo-800">
+                                <span id="contestTimerStatusText">Reading...</span>
+                            </span>
+                        </div>
+                        <div class="flex gap-2 flex-wrap">
+                            <button onclick="openContestSessionReview()" class="bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-semibold px-3 py-2 rounded-md transition-colors border border-slate-300 dark:border-slate-700">Stats</button>
+                            <button id="contestRevealBtn" onclick="revealContestAnswer()" class="hidden bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-semibold px-3 py-2 rounded-md transition-colors border border-slate-300 dark:border-slate-700">Answer</button>
+                            <button id="contestNextBtn" onclick="pushContestQuestion('Toss-up')" class="bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white text-xs font-bold px-3.5 py-2 rounded-md transition-colors">Next Toss-up</button>
+                            <button id="contestBonusBtn" onclick="pushContestQuestion('Bonus')" class="hidden bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-3.5 py-2 rounded-md transition-colors">Next Bonus</button>
+                            <button id="leaveMatchBtn" onclick="leaveContestMatch()" class="bg-rose-600 hover:bg-rose-500 text-white text-xs font-semibold px-3 py-2 rounded-md transition-colors">Leave</button>
+                        </div>
+                    </div>
+
+                    <div id="contestStatusBanner" class="bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-indigo-700 dark:text-indigo-300 px-4 py-2.5 rounded-md text-xs font-semibold">
+                        Waiting for next question...
+                    </div>
+
+                    <div id="contestQuestionBox" class="min-h-[160px] text-base sm:text-lg leading-relaxed text-slate-900 dark:text-slate-100 whitespace-pre-wrap font-medium p-5 rounded-md bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
+                        Share room details. Click <strong>Next Toss-up</strong> to start.
+                    </div>
+
+                    <div class="pt-3 border-t border-slate-200 dark:border-slate-800 flex gap-2.5">
+                        <button id="contestBuzzBtn" onclick="contestBuzz()" class="bg-rose-600 hover:bg-rose-500 disabled:opacity-40 text-white font-extrabold px-5 py-2.5 rounded-md text-xs uppercase tracking-wider transition-colors">
+                            Buzz (Space)
+                        </button>
+                        <input type="text" id="contestAnswerInput" disabled placeholder="Buzz first..." 
+                            oninput="handleUserTyping(true)"
+                            onkeydown="if(event.key==='Enter') submitContestAnswer()"
+                            class="flex-1 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-md px-4 py-2.5 text-xs sm:text-sm text-slate-900 dark:text-slate-100 disabled:opacity-40 focus:outline-none focus:border-indigo-500"/>
+                        <button id="contestMicBtn" disabled onclick="startVoiceRecognition('contest')" class="bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 disabled:opacity-40 text-slate-800 dark:text-slate-200 font-semibold px-3.5 py-2.5 rounded-md transition-colors text-xs border border-slate-300 dark:border-slate-700">
+                            Speak (V)
+                        </button>
+                        <button id="contestSubmitBtn" disabled onclick="submitContestAnswer()" class="bg-emerald-600 hover:bg-emerald-500 disabled:opacity-40 text-white font-bold px-5 py-2.5 rounded-md text-xs transition-colors">
+                            Submit
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SCOREBOARD SIDEBAR -->
+        <div class="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 rounded-lg p-5 h-fit space-y-4">
+            <h2 class="text-xs font-bold text-slate-700 dark:text-slate-300 border-b border-slate-200 dark:border-slate-800 pb-3 flex items-center justify-between uppercase tracking-wider">
+                <span>Scoreboard</span>
+                <span id="modeIndicator" class="text-[10px] bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 px-2 py-0.5 rounded font-bold border border-indigo-300 dark:border-indigo-800">Solo</span>
+            </h2>
+
+            <!-- Solo Score Panel -->
+            <div id="soloScorePanel" class="space-y-2.5">
+                <div class="flex justify-between items-center bg-slate-50 dark:bg-slate-950 p-3.5 rounded-md border border-slate-200 dark:border-slate-800">
+                    <span class="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wide">Points</span>
+                    <span id="soloScoreVal" class="text-2xl font-extrabold font-mono text-emerald-600 dark:text-emerald-400">0</span>
+                </div>
+                <p class="text-[11px] text-slate-600 dark:text-slate-400 leading-relaxed">Toss-up: +4 | Bonus: +10 | Penalty: -4</p>
+            </div>
+
+            <!-- Bot Score Panel (Live 1v1 Scoreboard) -->
+            <div id="botScorePanel" class="hidden space-y-3">
+                <div class="p-3.5 rounded-md bg-indigo-50 dark:bg-indigo-950/50 border border-indigo-300 dark:border-indigo-800 flex justify-between items-center">
+                    <div>
+                        <div class="text-xs font-extrabold text-indigo-700 dark:text-indigo-300">You</div>
+                        <div class="text-[10px] text-slate-500 dark:text-slate-400 font-semibold">Challenger</div>
+                    </div>
+                    <span id="botModePlayerScoreVal" class="text-2xl font-extrabold font-mono text-emerald-600 dark:text-emerald-400">0</span>
+                </div>
+
+                <div class="text-center text-[10px] font-extrabold uppercase tracking-widest text-slate-400">VS</div>
+
+                <div class="p-3.5 rounded-md bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 flex justify-between items-center">
+                    <div class="flex items-center gap-2.5 min-w-0">
+                        <img id="sidebarBotAvatar" src="" alt="Bot" class="w-9 h-9 rounded-md object-cover bg-slate-200 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 shrink-0"/>
+                        <div class="truncate">
+                            <div id="sidebarBotName" class="text-xs font-extrabold text-slate-900 dark:text-slate-100 truncate">Select Bot</div>
+                            <div id="sidebarBotRating" class="text-[10px] text-slate-500 font-mono">---</div>
+                        </div>
+                    </div>
+                    <span id="botModeBotScoreVal" class="text-2xl font-extrabold font-mono text-rose-600 dark:text-rose-400">0</span>
+                </div>
+
+                <div id="botMatchProgressBox" class="hidden pt-1 space-y-1.5">
+                    <div class="flex justify-between text-[11px] font-semibold text-slate-600 dark:text-slate-400">
+                        <span>Progress</span>
+                        <span id="botSidebarRoundText" class="font-mono">0 / 10</span>
+                    </div>
+                    <div class="w-full h-2 bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">
+                        <div id="botSidebarProgressBar" class="h-full bg-indigo-600 transition-all duration-300" style="width: 0%"></div>
+                    </div>
+                </div>
+                <p class="text-[11px] text-slate-600 dark:text-slate-400 leading-relaxed pt-1">Toss-up: +4 | Bonus: +10 | Early Interrupt: -4</p>
+            </div>
+
+            <!-- Contest Score Panel -->
+            <div id="contestScorePanel" class="hidden space-y-2.5">
+                <div id="teamsList" class="space-y-2"></div>
+                <p class="text-[11px] text-slate-600 dark:text-slate-400 pt-1">First buzz locks out others.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /* =========================================================================
+           WINTER BOTS CONFIGURATION & PERSONALITY ENGINE
+           ========================================================================= */
+        const WINTER_BOTS = {
+            rudolph: {
+                id: 'rudolph',
+                name: 'Rudolph',
+                title: 'Beginner',
+                accuracy: 0.50,
+                accuracyLabel: '50% Accuracy',
+                badgeColor: 'text-emerald-600 dark:text-emerald-400',
+                avatar: '/static/images/rudolph.png',
+                fallbackInitials: 'RD',
+                fallbackBg: '#991b1b',
+                bio: 'North Pole rookie who joined the Science Bowl team to light up the buzzer—literally.',
+                playstyle: 'Polite and nervous. Never interrupts early; waits ~1.5 seconds after the toss-up finishes reading before buzzing.',
+                buzzStrategy: { type: 'after_read', delayMs: 1500 },
+                lines: {
+                    onMatchStart: [
+                        "G-gosh, good luck! Please don't buzz too fast, my hooves get slippery!",
+                        "Hi there! Coach Santa told me to wait until the moderator finishes speaking.",
+                        "My nose only glows when I'm nervous... so it's basically a floodlight right now.",
+                        "I studied the flashcards all night in the stables! Ready when you are!",
+                        "May the best mammal win! Please go easy on me on the physics math!"
+                    ],
+                    onBotCorrect: [
+                        "Wait—I actually got it?! Oh boy, wait till Clarice hears about this!",
+                        "Sorry to take that one! I waited till the end just like the rules say!",
+                        "Yay! My nose blinked twice—that means I remembered the right formula!",
+                        "Whew, I was shaking so hard I almost missed the buzzer button!",
+                        "Oh golly, +4 points! I promise I wasn't trying to show off!"
+                    ],
+                    onBotNeg: [
+                        "Oh no, I slipped on the ice and hit the buzzer by accident! Sorry!",
+                        "Agh! Minus four?! Santa is definitely putting me back on sleigh duty.",
+                        "I panicked! My hoof was just hovering and it dropped!",
+                        "Oof, that wasn't even close... I'm turning redder than my nose.",
+                        "Sorry moderator! I didn't mean to interrupt, I just got startled!"
+                    ],
+                    onPlayerNeg: [
+                        "Ooh, tough break! That's why I'm terrified of buzzing early!",
+                        "Yikes! Minus four points... want me to wait a second while you shake it off?",
+                        "Whoa, you jumped right in! Unlucky neg, friend!",
+                        "Careful! Those early interrupts bite harder than a North Pole blizzard!",
+                        "Oh dear, that's a neg! Now I'm even more nervous to buzz!"
+                    ],
+                    onPlayerCorrect: [
+                        "Whoa, you're so fast! How did you know that already?!",
+                        "Nice job! You answered that cleaner than a fresh snowfall!",
+                        "Amazing! I was still trying to sound out the first syllable!",
+                        "Golly, you really know your science! Well played!",
+                        "I tip my antlers to you—that was super impressive!"
+                    ],
+                    onMatchEndBotWins: [
+                        "I won?! Oh my gosh, thank you for playing such a polite game with me!",
+                        "Whew, that was close! Hot cocoa is on me back at the workshop!",
+                        "I can't believe waiting until the end actually worked! Good game!"
+                    ],
+                    onMatchEndPlayerWins: [
+                        "Congrats! You totally out-buzzed me—you're ready for Nationals!",
+                        "Well played! I'm gonna go practice my reaction times with the elves!",
+                        "You earned every point! Thanks for a super fun match!"
+                    ]
+                }
+            },
+            marv: {
+                id: 'marv',
+                name: 'Marv',
+                title: 'Chaotic Negger',
+                accuracy: 0.35,
+                accuracyLabel: '35% Accuracy',
+                badgeColor: 'text-amber-600 dark:text-amber-400',
+                avatar: '/static/images/marv.png',
+                fallbackInitials: 'MV',
+                fallbackBg: '#78350f',
+                bio: 'Self-proclaimed "Wet Bandit" of Science Bowl. Has never once heard the second half of a toss-up.',
+                playstyle: 'Overconfident and reckless. Frequently interrupts early (15%–30% through the question) and often gets it wrong (-4 neg).',
+                buzzStrategy: { type: 'fraction', min: 0.15, max: 0.30 },
+                lines: {
+                    onMatchStart: [
+                        "Step aside, kid. Harry and I cased this packet last night—I know all the answers!",
+                        "We're the Wet Bandits! Every question I steal, I leave the faucet running!",
+                        "Why wait for the whole question? Three words is plenty for a genius like me!",
+                        "I got hit in the face with an iron and I STILL have faster reflexes than you!",
+                        "Let's roll! If I don't know it, I'll just yell something loud and confident!"
+                    ],
+                    onBotCorrect: [
+                        "BOOM! Pure instinct! Who needs the rest of the sentence?!",
+                        "Ha! Like taking candy from a kid in Chicago! +4 for the Wet Bandits!",
+                        "Did you see that?! I guessed three words in and nailed it!",
+                        "Genius! Pure, unadulterated street-smart science!",
+                        "Too slow! I'm practically a walking encyclopedia with a crowbar!"
+                    ],
+                    onBotNeg: [
+                        "AAAAAHHH! Minus four?! This buzzer is rigged! Somebody booby-trapped it!",
+                        "Okay, okay, I buzzed a little early—who puts trick words in the first sentence?!",
+                        "Ow! That neg stung worse than a tarantula on the forehead!",
+                        "Hey, nobody told me there were TWO parts to that question!",
+                        "I meant the OTHER scientific thing! Come on, give me half credit!"
+                    ],
+                    onPlayerNeg: [
+                        "BWAHAHAHA! You fell right into my trap! Enjoy the -4, rookie!",
+                        "Ooh, somebody got greedy! That's MY move, pal!",
+                        "Hahaha! Now you know how it feels when the house fights back!",
+                        "Neg city! Population: YOU! Hahaha!",
+                        "Nice try hotshot, guess you didn't read ahead either!"
+                    ],
+                    onPlayerCorrect: [
+                        "Hey! You're cheating! Nobody actually studies this stuff!",
+                        "Lucky guess! Anyone coulda got that if they waited till the end!",
+                        "Pfft, big deal. I was letting you have that one to build suspense.",
+                        "Whatever! I would've buzzed earlier if my glove wasn't stuck!",
+                        "Alright, alright, smarty-pants—watch your back on the next one!"
+                    ],
+                    onMatchEndBotWins: [
+                        "HAHA! The Wet Bandits strike again! Hand over the trophy!",
+                        "Even with a few negs, pure aggression wins the day! What a heist!",
+                        "Tell Harry I won a Science Bowl! Nobody's gonna believe this!"
+                    ],
+                    onMatchEndPlayerWins: [
+                        "Aw, man! Booby-trapped by science AGAIN! Rematch right now!",
+                        "You only won 'cause the moderator kept penalizing my brilliant guesses!",
+                        "Fine, take the win—I'm gonna go ice my forehead."
+                    ]
+                }
+            },
+            santa: {
+                id: 'santa',
+                name: 'Santa Claus',
+                title: 'Regional Contender',
+                accuracy: 0.78,
+                accuracyLabel: '78% Accuracy',
+                badgeColor: 'text-indigo-600 dark:text-indigo-400',
+                avatar: '/static/images/santa.jpg',
+                fallbackInitials: 'SC',
+                fallbackBg: '#1e3a8a',
+                bio: 'Centuries of global logistics, thermodynamics, and orbital mechanics make him a formidable Regional captain.',
+                playstyle: 'Jolly but fast on the buzzer. Buzzes near the end of the question (75%–85% through) and plays disciplined Science Bowl.',
+                buzzStrategy: { type: 'fraction', min: 0.75, max: 0.85 },
+                lines: {
+                    onMatchStart: [
+                        "Ho, ho, ho! Let's see if your science skills put you on the Nice List today!",
+                        "Delivering presents to two billion homes requires serious applied physics. Ready?",
+                        "A disciplined buzzer wins championships, my friend. Let's have a crisp match!",
+                        "Even the elves couldn't match my buzzer discipline at Regionals. Good luck!",
+                        "Warm up those fingers—we're playing proper, disciplined Science Bowl!"
+                    ],
+                    onBotCorrect: [
+                        "Ho, ho, ho! Patience near the end of the toss-up pays off every time!",
+                        "Right down the chimney! That's +4 points for the North Pole!",
+                        "I've been checking that textbook twice—and it was right on the money!",
+                        "Clean buzz, clean answer! Let's see what the bonus brings.",
+                        "Ho, ho! Experience is the greatest gift of all!"
+                    ],
+                    onBotNeg: [
+                        "Ho... oh dear. Even Santa gets overeager on the buzzer sometimes!",
+                        "Coal in my stocking for that interrupt! Well, the floor is yours!",
+                        "Aha, I jumped the gun before the final clause! Good luck on the rest of it!",
+                        "My beard got caught on the buzzer switch! Take advantage of my mistake!",
+                        "Disciplined play means owning your negs. Go ahead and finish strong!"
+                    ],
+                    onPlayerNeg: [
+                        "Ho, ho—careful now! Patience is a virtue on the buzzer!",
+                        "Ah, too quick on the draw! Let's see if Santa can clean this one up.",
+                        "That's a -4 on the Naughty List! Take a breath before the next toss-up.",
+                        "You anticipated the wrong keyword! Always wait for the stem to lock in.",
+                        "Ho, ho! A classic buzzer trap—I've seen thousands like it!"
+                    ],
+                    onPlayerCorrect: [
+                        "Ho, ho, ho! Splendid buzz! You earned a gold star for that one!",
+                        "Marvelous! Sharp as an icicle and twice as fast!",
+                        "Well done! That's Regional-caliber buzzer timing right there!",
+                        "You beat me to the punch! Truly impressive recall!",
+                        "Ho, ho! Keep playing like that and you'll be heading to D.C.!"
+                    ],
+                    onMatchEndBotWins: [
+                        "Ho, ho, ho! A jolly good match! Keep practicing and you'll beat me next time!",
+                        "Disciplined buzzing wins the day! Milk and cookies for a worthy opponent!",
+                        "What a contest! You pushed the North Pole team to the very last question!"
+                    ],
+                    onMatchEndPlayerWins: [
+                        "Ho, ho, ho! Bravo! You out-buzzed Santa himself—what a performance!",
+                        "Incredible work! Consider yourself officially at the top of the Nice List!",
+                        "You played with poise and speed. A well-deserved victory!"
+                    ]
+                }
+            },
+            grinch: {
+                id: 'grinch',
+                name: 'The Grinch',
+                title: 'Nationals Boss',
+                accuracy: 0.92,
+                accuracyLabel: '92% Accuracy',
+                badgeColor: 'text-rose-600 dark:text-rose-400',
+                avatar: '/static/images/grinch.png',
+                fallbackInitials: 'GR',
+                fallbackBg: '#14532d',
+                bio: 'Four-time Mount Crumpit Champion. Feeds on stolen toss-ups, bonus sweeps, and crushed dreams.',
+                playstyle: 'Brutal D.C. Finals speed and accuracy. Aggressively interrupts mid-question (55%–70% through) and steals toss-ups.',
+                buzzStrategy: { type: 'fraction', min: 0.55, max: 0.70 },
+                lines: {
+                    onMatchStart: [
+                        "4:00 PM: Wallow in self-pity. 4:30 PM: Crush your Science Bowl hopes.",
+                        "You're wasting my time. I already deduced the entire packet from the cover sheet.",
+                        "Go ahead and hover over your spacebar. I'll buzz before your neurons even fire.",
+                        "National Finals speed. Zero mercy. Try not to cry when I sweep the bonuses.",
+                        "Another overconfident human? Delightful. Watch how a real boss plays."
+                    ],
+                    onBotCorrect: [
+                        "Stolen! Just like Christmas—and twice as satisfying!",
+                        "You were actually going to wait for the rest of that? Pathetic.",
+                        "Too slow! I parsed the keyword three clauses ago!",
+                        "Fourteen points closer to total humiliation. You're welcome.",
+                        "Did you even move your finger? I thought my buzzer was broken it was so easy."
+                    ],
+                    onBotNeg: [
+                        "WHAT?! The moderator misread that! That question was poorly written garbage!",
+                        "Tch. A statistical anomaly. Don't flatter yourself—you still won't get it.",
+                        "My thumb slipped on Max's leash! Enjoy your charity rebound!",
+                        "Four points? A rounding error. I'll make it back in ten seconds.",
+                        "Hmph. Even a genius occasionally overestimates the author's competence."
+                    ],
+                    onPlayerNeg: [
+                        "BAHAHA! Music to my ears! Minus four points of pure misery!",
+                        "Desperation looks awful on you. Thanks for the free swing!",
+                        "Guessing mid-sentence? That's MY territory, amateur!",
+                        "Oh, the agony! Keep negging—I won't even have to try!",
+                        "Swing and a miss! Your heart just shrank three sizes!"
+                    ],
+                    onPlayerCorrect: [
+                        "Fluke. Pure, statistically improbable fluke.",
+                        "Hmph. Lucky keyword snipe. Don't expect that to happen again.",
+                        "Fine, take your four points. Enjoy them while they last.",
+                        "You guessed. Admit it—you had no idea until you hit the key.",
+                        "Irritating. Very irritating. Now watch me turn up the pace."
+                    ],
+                    onMatchEndBotWins: [
+                        "Utter domination! Now pack your flashcards and go back to Whoville!",
+                        "Was there ever any doubt? Stink, stank, stunk!",
+                        "A masterclass in buzzer brutality. Come back when you've read a real textbook."
+                    ],
+                    onMatchEndPlayerWins: [
+                        "IMPOSSIBLE! You rigged the random number generator! I demand a recount!",
+                        "Grrr... fine! Take your victory! My heart didn't grow, I just had glare on my screen!",
+                        "Don't get cocky, Whoville. Next time I'm buzzing at 40%!"
+                    ]
+                }
+            }
+        };
+
+        /* Helper to generate inline SVG fallback if local image is missing */
+        function getFallbackAvatarDataUri(bot) {
+            const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+                <rect width="128" height="128" fill="${bot.fallbackBg}"/>
+                <text x="50%" y="54%" dominant-baseline="middle" text-anchor="middle" fill="#ffffff" font-family="sans-serif" font-weight="800" font-size="44">${bot.fallbackInitials}</text>
+            </svg>`;
+            return 'data:image/svg+xml;utf8,' + encodeURIComponent(svg);
+        }
+
+        /* =========================================================================
+           APP & AUTH SETUP
+           ========================================================================= */
+        let selectedDivision = "High School";
+        let selectedDifficulty = "Intermediate";
+        let currentUser = null;
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyA_i9Mv3acNkwJyBKfG1wYrA54n9Ek_-p4",
+            authDomain: "sciencebowltrainer.firebaseapp.com",
+            projectId: "sciencebowltrainer",
+            storageBucket: "sciencebowltrainer.firebasestorage.app",
+            messagingSenderId: "406701988787",
+            appId: "1:406701988787:web:f91f3e5fa01f7cfa2149c6"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+
+        function proceedToArenaSetup() {
+            const gate = document.getElementById('welcomeGateModal');
+            if (gate && !gate.classList.contains('hidden')) {
+                gate.classList.add('hidden');
+                gate.classList.remove('flex');
+                document.getElementById('homeScreenModal').classList.remove('hidden');
+                document.getElementById('homeScreenModal').classList.add('flex');
+            }
+            resetPrefetch();
+        }
+
+        function continueAsGuest() {
+            currentUser = null;
+            document.getElementById('authNavBtn').textContent = "Guest";
+            proceedToArenaSetup();
+        }
+
+        function openAuthModal() {
+            document.getElementById('authErrorMsg').classList.add('hidden');
+            document.getElementById('authModal').classList.remove('hidden');
+            document.getElementById('authModal').classList.add('flex');
+        }
+
+        function closeAuthModal() {
+            document.getElementById('authModal').classList.add('hidden');
+            document.getElementById('authModal').classList.remove('flex');
+        }
+
+        function applyUserData(user) {
+            currentUser = user.email || user.phoneNumber || user.displayName;
+            document.getElementById('authNavBtn').textContent = currentUser;
+            document.getElementById('authLoggedOutView').classList.add('hidden');
+            document.getElementById('authLoggedInView').classList.remove('hidden');
+            document.getElementById('authActiveUser').textContent = currentUser;
+            closeAuthModal();
+            proceedToArenaSetup();
+        }
+
+        async function signInWithGoogle() {
+            try {
+                const result = await auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
+                applyUserData(result.user);
+            } catch (e) { showAuthError(e.message); }
+        }
+
+        function signInWithPhone() {
+            const phone = prompt("Phone number (+1...):");
+            if (!phone) return;
+            if (!window.recaptchaVerifier) {
+                window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', { 'size': 'invisible' }, auth);
+            }
+            auth.signInWithPhoneNumber(phone, window.recaptchaVerifier)
+                .then(res => {
+                    const code = prompt("6-digit code:");
+                    if (!code) return;
+                    return res.confirm(code);
+                })
+                .then(result => applyUserData(result.user))
+                .catch(e => showAuthError("Failed: " + e.message));
+        }
+
+        async function handleEmailAuth(action) {
+            const email = document.getElementById('authEmail').value.trim();
+            const password = document.getElementById('authPassword').value.trim();
+            if (!email || !password) return showAuthError("Required fields missing.");
+            try {
+                const res = action === 'register'
+                    ? await auth.createUserWithEmailAndPassword(email, password)
+                    : await auth.signInWithEmailAndPassword(email, password);
+                applyUserData(res.user);
+            } catch (e) { showAuthError(e.message); }
+        }
+
+        async function handleGateEmailAuth(action) {
+            const email = document.getElementById('gateEmail').value.trim();
+            const password = document.getElementById('gatePassword').value.trim();
+            if (!email || !password) return showAuthError("Required fields missing.");
+            try {
+                const res = action === 'register'
+                    ? await auth.createUserWithEmailAndPassword(email, password)
+                    : await auth.signInWithEmailAndPassword(email, password);
+                applyUserData(res.user);
+            } catch (e) { showAuthError(e.message); }
+        }
+
+        async function logoutUser() {
+            await auth.signOut();
+            currentUser = null;
+            document.getElementById('authNavBtn').textContent = "Log In";
+            document.getElementById('authLoggedInView').classList.add('hidden');
+            document.getElementById('authLoggedOutView').classList.remove('hidden');
+            closeAuthModal();
+            document.getElementById('welcomeGateModal').classList.remove('hidden');
+            document.getElementById('welcomeGateModal').classList.add('flex');
+        }
+
+        function showAuthError(msg) {
+            ['authErrorMsg', 'gateErrorMsg'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.textContent = msg;
+                    el.classList.remove('hidden');
+                }
+            });
+        }
+
+        auth.onAuthStateChanged(user => {
+            if (user) applyUserData(user);
+        });
+
+        /* =========================================================================
+           VOICE RECOGNITION
+           ========================================================================= */
+        let recognition = null;
+
+        function startVoiceRecognition(mode) {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SpeechRecognition) {
+                alert("Speech recognition not supported.");
+                return;
+            }
+            if (recognition) {
+                try { recognition.stop(); } catch(e) {}
+            }
+
+            recognition = new SpeechRecognition();
+            recognition.lang = 'en-US';
+            recognition.interimResults = false;
+            recognition.maxAlternatives = 1;
+
+            const micBtnId = mode === 'solo' ? 'soloMicBtn' : (mode === 'bot' ? 'botMicBtn' : 'contestMicBtn');
+            const inputId = mode === 'solo' ? 'soloAnswerInput' : (mode === 'bot' ? 'botAnswerInput' : 'contestAnswerInput');
+            const micBtn = document.getElementById(micBtnId);
+            
+            micBtn.textContent = "Listening...";
+            micBtn.className = "bg-indigo-600 text-white font-semibold px-3.5 py-2.5 rounded-md transition-colors text-xs";
+
+            recognition.onresult = (event) => {
+                const transcript = event.results[0][0].transcript;
+                document.getElementById(inputId).value = transcript;
+                resetMicButton(mode);
+                if (mode === 'solo') submitSoloAnswer();
+                else if (mode === 'bot') submitBotPlayerAnswer();
+                else submitContestAnswer();
+            };
+
+            recognition.onerror = () => { resetMicButton(mode); };
+            recognition.onend = () => { resetMicButton(mode); };
+
+            try { recognition.start(); } catch (e) { resetMicButton(mode); }
+        }
+
+        function resetMicButton(mode) {
+            const micBtnId = mode === 'solo' ? 'soloMicBtn' : (mode === 'bot' ? 'botMicBtn' : 'contestMicBtn');
+            const micBtn = document.getElementById(micBtnId);
+            if (micBtn) {
+                micBtn.textContent = "Speak (V)";
+                micBtn.className = "bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 disabled:opacity-40 text-slate-800 dark:text-slate-200 font-semibold px-3.5 py-2.5 rounded-md transition-colors text-xs border border-slate-300 dark:border-slate-700";
+            }
+        }
+
+        /* =========================================================================
+           STUDY BANK & MATCH LOG
+           ========================================================================= */
+        let studyBank = JSON.parse(localStorage.getItem('science_bowl_study_bank') || '[]');
+
+        function updateStudyBankCount() {
+            const countEl = document.getElementById('studyBankCount');
+            if (countEl) countEl.textContent = studyBank.length;
+        }
+        updateStudyBankCount();
+
+        function isBookmarked(qText) {
+            return studyBank.some(item => item.question === qText);
+        }
+
+        function toggleBookmarkCurrent() {
+            if (!currentSoloQ) return;
+            const idx = studyBank.findIndex(item => item.question === currentSoloQ.question);
+            const btn = document.getElementById('bookmarkBtn');
+            if (idx >= 0) {
+                studyBank.splice(idx, 1);
+                btn.textContent = "Star";
+                btn.className = "bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 font-semibold px-3.5 py-2 rounded-md transition-colors text-xs border border-slate-300 dark:border-slate-700";
+            } else {
+                studyBank.push(currentSoloQ);
+                btn.textContent = "Starred";
+                btn.className = "bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 font-semibold px-3.5 py-2 rounded-md transition-colors text-xs border border-indigo-300 dark:border-indigo-700";
+            }
+            localStorage.setItem('science_bowl_study_bank', JSON.stringify(studyBank));
+            updateStudyBankCount();
+        }
+
+        function openStudyBankModal() {
+            const modal = document.getElementById('studyBankModal');
+            const body = document.getElementById('studyBankBody');
+
+            if (studyBank.length === 0) {
+                body.innerHTML = `<p class="text-xs text-slate-500 text-center py-6">No starred cards saved.</p>`;
+            } else {
+                body.innerHTML = `<div class="space-y-2.5 max-h-[60vh] overflow-y-auto pr-2">` + studyBank.map((item, i) => `
+                    <div class="p-3.5 rounded-md bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-xs space-y-1.5">
+                        <div class="flex justify-between font-bold text-slate-700 dark:text-slate-300">
+                            <span>#${i+1} - ${item.category} (${item.q_type})</span>
+                            <button onclick="removeStudyBankItem(${i})" class="text-rose-600 dark:text-rose-400 hover:underline">Remove</button>
+                        </div>
+                        <div class="text-slate-900 dark:text-slate-100 font-medium">${item.question}</div>
+                        <div class="text-emerald-600 dark:text-emerald-400 font-bold">Answer: ${item.answer}</div>
+                    </div>
+                `).join('') + `</div>`;
+            }
+            renderMath(body);
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeStudyBankModal() {
+            document.getElementById('studyBankModal').classList.add('hidden');
+            document.getElementById('studyBankModal').classList.remove('flex');
+        }
+
+        function removeStudyBankItem(index) {
+            studyBank.splice(index, 1);
+            localStorage.setItem('science_bowl_study_bank', JSON.stringify(studyBank));
+            updateStudyBankCount();
+            openStudyBankModal();
+        }
+
+        let matchHistoryDB = JSON.parse(localStorage.getItem('science_bowl_match_history') || '[]');
+
+        function saveMatchToHistory(matchData) {
+            matchHistoryDB.unshift({
+                date: new Date().toLocaleDateString() + " " + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                ...matchData
+            });
+            if (matchHistoryDB.length > 20) matchHistoryDB.pop();
+            localStorage.setItem('science_bowl_match_history', JSON.stringify(matchHistoryDB));
+        }
+
+        function openLeaderboardModal() {
+            const modal = document.getElementById('leaderboardModal');
+            const body = document.getElementById('leaderboardBody');
+
+            if (matchHistoryDB.length === 0) {
+                body.innerHTML = `<p class="text-xs text-slate-500 text-center py-6">No logs available.</p>`;
+            } else {
+                body.innerHTML = `<div class="space-y-2.5 max-h-[60vh] overflow-y-auto pr-2">` + matchHistoryDB.map((match) => {
+                    const teamsStr = Object.entries(match.teams || {}).map(([t, s]) => `${t}: <strong>${s} pts</strong>`).join(' | ');
+                    return `
+                        <div class="p-3.5 rounded-md bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-xs space-y-1">
+                            <div class="flex justify-between font-bold text-slate-700 dark:text-slate-300">
+                                <span>${match.contest_id} - ${match.division} (${match.difficulty})</span>
+                                <span class="text-slate-500 font-mono">${match.date}</span>
+                            </div>
+                            <div class="text-slate-600 dark:text-slate-400">Scores: ${teamsStr}</div>
+                        </div>
+                    `;
+                }).join('') + `</div>`;
+            }
+            modal.classList.add('flex');
+            modal.classList.remove('hidden');
+        }
+
+        function closeLeaderboardModal() {
+            document.getElementById('leaderboardModal').classList.add('hidden');
+            document.getElementById('leaderboardModal').classList.remove('flex');
+        }
+
+        function clearLeaderboard() {
+            if (confirm("Clear logs?")) {
+                matchHistoryDB = [];
+                localStorage.removeItem('science_bowl_match_history');
+                openLeaderboardModal();
+            }
+        }
+
+        /* =========================================================================
+           NAVIGATION, DIVISION, DIFFICULTY & THEME
+           ========================================================================= */
+        let screenHistory = ['home'];
+        let currentScreen = 'home';
+
+        function recordScreen(screenName) {
+            if (currentScreen !== screenName) {
+                screenHistory.push(currentScreen);
+                currentScreen = screenName;
+            }
+        }
+
+        function goBackScreen() {
+            if (screenHistory.length === 0) {
+                openHomeScreen(false);
+                return;
+            }
+            const prev = screenHistory.pop();
+            currentScreen = prev;
+
+            if (prev === 'home') {
+                openHomeScreen(false);
+            } else if (prev === 'solo') {
+                document.getElementById('homeScreenModal').classList.add('hidden');
+                document.getElementById('homeScreenModal').classList.remove('flex');
+                switchMode('solo', false);
+            } else if (prev === 'bot') {
+                document.getElementById('homeScreenModal').classList.add('hidden');
+                document.getElementById('homeScreenModal').classList.remove('flex');
+                switchMode('bot', false);
+            } else if (prev === 'contest_lobby') {
+                document.getElementById('homeScreenModal').classList.add('hidden');
+                document.getElementById('homeScreenModal').classList.remove('flex');
+                if (myContestId) cleanupContestLocalState();
+                switchMode('contest', false);
+            }
+        }
+
+        function selectDivision(div) {
+            selectedDivision = div;
+            const msBtn = document.getElementById('divBtnMS');
+            const hsBtn = document.getElementById('divBtnHS');
+            if (div === 'Middle School') {
+                msBtn.className = "p-4 rounded-md border-2 text-left transition-colors border-indigo-600 dark:border-indigo-500 bg-indigo-50 dark:bg-indigo-950/40";
+                hsBtn.className = "p-4 rounded-md border-2 text-left transition-colors border-slate-300 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 hover:border-indigo-500";
+            } else {
+                hsBtn.className = "p-4 rounded-md border-2 text-left transition-colors border-indigo-600 dark:border-indigo-500 bg-indigo-50 dark:bg-indigo-950/40";
+                msBtn.className = "p-4 rounded-md border-2 text-left transition-colors border-slate-300 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 hover:border-indigo-500";
+            }
+        }
+
+        function selectDifficulty(diff) {
+            selectedDifficulty = diff;
+            document.querySelectorAll('.diff-card').forEach(el => {
+                el.className = "diff-card p-4 rounded-md border-2 text-left transition-colors border-slate-300 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 hover:border-indigo-500";
+            });
+            const activeCard = document.getElementById('diffBtn' + diff);
+            if (activeCard) {
+                activeCard.className = "diff-card p-4 rounded-md border-2 text-left transition-colors border-indigo-600 dark:border-indigo-500 bg-indigo-50 dark:bg-indigo-950/40";
+            }
+        }
+
+        function updateActiveLevelBadge() {
+            document.getElementById('activeLevelBadge').textContent = `${selectedDivision} - ${selectedDifficulty}`;
+        }
+
+        function openHomeScreen(pushHistory = true) {
+            if (activeTab === 'contest' && myContestId && !isRoomCreator) {
+                alert("Only host can change settings.");
+                return;
+            }
+            if (pushHistory) recordScreen('home');
+            document.getElementById('homeScreenModal').classList.remove('hidden');
+            document.getElementById('homeScreenModal').classList.add('flex');
+        }
+
+        function enterAppFromHome() {
+            document.getElementById('homeScreenModal').classList.add('hidden');
+            document.getElementById('homeScreenModal').classList.remove('flex');
+            updateActiveLevelBadge();
+            resetPrefetch();
+            const targetScreen = activeTab === 'contest'
+                ? (myContestId ? 'contest_room' : 'contest_lobby')
+                : (activeTab === 'bot' ? 'bot' : 'solo');
+            recordScreen(targetScreen);
+            if (activeTab === 'contest' && myContestId && isRoomCreator) {
+                onSettingsChange();
+            }
+        }
+
+        function toggleDarkMode() {
+            const html = document.documentElement;
+            if (html.classList.contains('dark')) {
+                html.classList.remove('dark');
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.classList.add('dark');
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+        if (localStorage.getItem('theme') === 'light') {
+            document.documentElement.classList.remove('dark');
+        }
+
+        function toggleInstructions() {
+            const modal = document.getElementById('instructionsModal');
+            modal.classList.toggle('hidden');
+            modal.classList.toggle('flex');
+        }
+
+        /* =========================================================================
+           STATS & QUESTION BUFFER ENGINE
+           ========================================================================= */
+        let soloSessionStats = {
+            correct: 0,
+            incorrect: 0,
+            stalls: 0,
+            timeouts: 0,
+            penalties: 0,
+            responseTimes: [],
+            byCategory: {},
+            history: []
+        };
+        let soloQuestionStartedAt = null;
+        let lastContestState = null;
+
+        function getWeakestCategory() {
+            const cats = Object.entries(soloSessionStats.byCategory);
+            if (cats.length === 0) return "Biology";
+            let lowestCat = cats[0][0];
+            let lowestRatio = 1.0;
+            for (const [cat, data] of cats) {
+                const ratio = data.total > 0 ? (data.correct / data.total) : 0;
+                if (ratio < lowestRatio) {
+                    lowestRatio = ratio;
+                    lowestCat = cat;
+                }
+            }
+            return lowestCat;
+        }
+
+        function recordSoloStat(qObj, outcome, pointsChange, responseTimeSec = null, hadPenalty = false, userAns = "") {
+            if (!qObj) return;
+            const cat = qObj.category || "General";
+            if (!soloSessionStats.byCategory[cat]) {
+                soloSessionStats.byCategory[cat] = { correct: 0, total: 0 };
+            }
+            soloSessionStats.byCategory[cat].total += 1;
+
+            if (outcome === 'correct') {
+                soloSessionStats.correct += 1;
+                soloSessionStats.byCategory[cat].correct += 1;
+            } else if (outcome === 'incorrect') {
+                soloSessionStats.incorrect += 1;
+            } else if (outcome === 'stall') {
+                soloSessionStats.stalls += 1;
+            } else if (outcome === 'timeout') {
+                soloSessionStats.timeouts += 1;
+            }
+
+            if (hadPenalty) soloSessionStats.penalties += 1;
+            if (responseTimeSec !== null && responseTimeSec >= 0) {
+                soloSessionStats.responseTimes.push(Number(responseTimeSec.toFixed(2)));
+            }
+
+            soloSessionStats.history.unshift({
+                category: cat,
+                q_type: qObj.q_type,
+                question: qObj.question,
+                answer: qObj.answer,
+                user_answer: userAns,
+                outcome: outcome,
+                points: pointsChange,
+                time: responseTimeSec !== null ? `${responseTimeSec.toFixed(1)}s` : "-"
+            });
+        }
+
+        function openSoloSessionReview() {
+            const modal = document.getElementById('sessionReviewModal');
+            document.getElementById('reviewModalTitle').textContent = "Session Stats";
+            document.getElementById('reviewModalSubtitle').textContent = `${selectedDivision} - ${selectedDifficulty}`;
+
+            const s = soloSessionStats;
+            const totalAnswered = s.correct + s.incorrect + s.stalls;
+            const accuracy = totalAnswered > 0 ? Math.round((s.correct / totalAnswered) * 100) : 0;
+            const avgTime = s.responseTimes.length > 0
+                ? (s.responseTimes.reduce((a, b) => a + b, 0) / s.responseTimes.length).toFixed(1) + "s"
+                : "N/A";
+
+            let catHtml = "";
+            const catEntries = Object.entries(s.byCategory);
+            if (catEntries.length === 0) {
+                catHtml = `<p class="text-xs text-slate-500">No data.</p>`;
+            } else {
+                catHtml = `<div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">` + catEntries.map(([cat, data]) => {
+                    const pct = data.total > 0 ? Math.round((data.correct / data.total) * 100) : 0;
+                    return `
+                        <div class="p-3 rounded-md bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 flex justify-between items-center text-xs">
+                            <span class="font-semibold">${cat}</span>
+                            <span class="font-mono font-bold text-indigo-600 dark:text-indigo-400">${data.correct}/${data.total} (${pct}%)</span>
+                        </div>
+                    `;
+                }).join('') + `</div>`;
+            }
+
+            let historyHtml = "";
+            if (s.history.length > 0) {
+                historyHtml = `
+                    <div class="space-y-2.5">
+                        <h4 class="text-xs font-bold uppercase tracking-wider text-slate-500">Log</h4>
+                        <div class="space-y-2 max-h-64 overflow-y-auto pr-1">
+                            ${s.history.map((h, i) => `
+                                <div class="p-3.5 rounded-md bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-xs space-y-1">
+                                    <div class="flex justify-between font-bold text-slate-700 dark:text-slate-300">
+                                        <span>#${s.history.length - i} - ${h.category} (${h.q_type})</span>
+                                        <span class="font-mono ${h.points > 0 ? 'text-emerald-600 dark:text-emerald-400' : (h.points < 0 ? 'text-rose-600 dark:text-rose-400' : 'text-indigo-600 dark:text-indigo-400')}">
+                                            ${h.outcome.toUpperCase()} (${h.points >= 0 ? '+' + h.points : h.points} | ${h.time})
+                                        </span>
+                                    </div>
+                                    <div class="text-slate-700 dark:text-slate-300 line-clamp-2">${h.question}</div>
+                                    <div class="text-slate-500 text-[11px]">Answer: <strong class="text-slate-900 dark:text-slate-200">${h.answer}</strong></div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+
+            document.getElementById('sessionReviewBody').innerHTML = `
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                    <div class="p-3.5 rounded-md bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800">
+                        <div class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Score</div>
+                        <div class="text-xl font-extrabold font-mono text-emerald-600 dark:text-emerald-400 mt-1">${soloScore}</div>
+                    </div>
+                    <div class="p-3.5 rounded-md bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800">
+                        <div class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Accuracy</div>
+                        <div class="text-xl font-extrabold font-mono text-indigo-600 dark:text-indigo-400 mt-1">${accuracy}%</div>
+                        <div class="text-[10px] text-slate-500 mt-0.5">${s.correct}W / ${s.incorrect}L</div>
+                    </div>
+                    <div class="p-3.5 rounded-md bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800">
+                        <div class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Avg Time</div>
+                        <div class="text-xl font-extrabold font-mono text-slate-900 dark:text-slate-200 mt-1">${avgTime}</div>
+                    </div>
+                    <div class="p-3.5 rounded-md bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800">
+                        <div class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Penalties</div>
+                        <div class="text-xl font-extrabold font-mono text-rose-600 dark:text-rose-400 mt-1">${s.penalties}</div>
+                    </div>
+                </div>
+                <div class="space-y-2.5">
+                    <h4 class="text-xs font-bold uppercase tracking-wider text-slate-500">Categories</h4>
+                    ${catHtml}
+                </div>
+                ${historyHtml}
+            `;
+
+            renderMath(document.getElementById('sessionReviewBody'));
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function openContestSessionReview() {
+            if (!lastContestState) return;
+            const state = lastContestState;
+            const modal = document.getElementById('sessionReviewModal');
+            document.getElementById('reviewModalTitle').textContent = `Match Room Stats`;
+            document.getElementById('reviewModalSubtitle').textContent = `Room ${myContestId}`;
+
+            const teams = Object.keys(state.teams || {});
+            const membersMap = state.team_members || {};
+
+            const teamCardsHtml = teams.map(tName => {
+                const score = state.teams[tName] || 0;
+                const roster = (membersMap[tName] || []).join(', ') || "No players";
+                return `
+                    <div class="p-4 rounded-md bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 space-y-3">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <div class="font-extrabold text-sm text-indigo-600 dark:text-indigo-400">${tName}</div>
+                                <div class="text-xs text-slate-500 mt-0.5">${roster}</div>
+                            </div>
+                            <div class="text-xl font-extrabold font-mono text-emerald-600 dark:text-emerald-400">${score} pts</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            document.getElementById('sessionReviewBody').innerHTML = `<div class="space-y-3">${teamCardsHtml}</div>`;
+            renderMath(document.getElementById('sessionReviewBody'));
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeSessionReview() {
+            document.getElementById('sessionReviewModal').classList.add('hidden');
+            document.getElementById('sessionReviewModal').classList.remove('flex');
+        }
+
+        /* =========================================================================
+           TIMERS & SOLO/CONTEST FLOW
+           ========================================================================= */
+        let readingTimeout = null;
+        let countdownInterval = null;
+        let postBuzzStallTimeout = null;
+        let postBuzzCountdownInterval = null;
+        let typingTimeout = null;
+
+        let isQuestionFinishedReading = false;
+        let soloBuzzedEarly = false;
+
+        function clearAllTimers() {
+            if (readingTimeout) { clearTimeout(readingTimeout); readingTimeout = null; }
+            if (countdownInterval) { clearInterval(countdownInterval); countdownInterval = null; }
+            if (postBuzzStallTimeout) { clearTimeout(postBuzzStallTimeout); postBuzzStallTimeout = null; }
+            if (postBuzzCountdownInterval) { clearInterval(postBuzzCountdownInterval); postBuzzCountdownInterval = null; }
+            if (typingTimeout) { clearTimeout(typingTimeout); typingTimeout = null; }
+            clearBotTimers();
+            if ('speechSynthesis' in window) { window.speechSynthesis.cancel(); }
+        }
+
+        function estimateSilentReadingMs(text) {
+            const plain = text.replace(/[$_*#\\{}]/g, ' ').trim();
+            const wordCount = plain ? plain.split(/\s+/).length : 0;
+            return Math.max(1500, Math.round(wordCount * 240));
+        }
+
+        function startPostBuzzNaturalPause(isContest = false) {
+            clearAllTimers();
+            if (document.getElementById('timerModeSelect').value !== 'timed') return;
+
+            const displayEl = document.getElementById(isContest ? 'contestTimerDisplay' : 'timerDisplay');
+            const statusTextEl = document.getElementById(isContest ? 'contestTimerStatusText' : 'timerStatusText');
+
+            let pauseLeft = 2.5;
+            displayEl.classList.remove('hidden');
+            statusTextEl.textContent = `Answer: ${pauseLeft.toFixed(1)}s`;
+
+            postBuzzCountdownInterval = setInterval(() => {
+                pauseLeft = Math.max(0, pauseLeft - 0.5);
+                if (pauseLeft > 0) {
+                    statusTextEl.textContent = `Answer: ${pauseLeft.toFixed(1)}s`;
+                } else {
+                    clearInterval(postBuzzCountdownInterval);
+                    postBuzzCountdownInterval = null;
+                }
+            }, 500);
+
+            postBuzzStallTimeout = setTimeout(() => {
+                clearAllTimers();
+                statusTextEl.textContent = "Stalled";
+                if (!isContest) {
+                    handleSoloBuzzStall();
+                } else {
+                    handleContestTimeout("Stalled");
+                }
+            }, 2500);
+        }
+
+        function handleUserTyping(isContest = false) {
+            if (postBuzzStallTimeout) { clearTimeout(postBuzzStallTimeout); postBuzzStallTimeout = null; }
+            if (postBuzzCountdownInterval) { clearInterval(postBuzzCountdownInterval); postBuzzCountdownInterval = null; }
+
+            const displayEl = document.getElementById(isContest ? 'contestTimerDisplay' : 'timerDisplay');
+            const statusTextEl = document.getElementById(isContest ? 'contestTimerStatusText' : 'timerStatusText');
+            displayEl.classList.remove('hidden');
+            statusTextEl.textContent = "Typing...";
+
+            if (typingTimeout) clearTimeout(typingTimeout);
+            typingTimeout = setTimeout(() => {
+                startPostBuzzNaturalPause(isContest);
+            }, 2500);
+        }
+
+        function handleSoloBuzzStall() {
+            const penaltiesEnabled = document.getElementById('penaltiesSelect').value === 'yes';
+            const elapsed = soloQuestionStartedAt ? (Date.now() - soloQuestionStartedAt) / 1000 : null;
+            const hadPenalty = Boolean(penaltiesEnabled && soloBuzzedEarly && currentSoloQ && currentSoloQ.q_type.toLowerCase() !== 'bonus');
+            let penaltyNote = "";
+            if (hadPenalty) {
+                soloScore -= 4;
+                document.getElementById('soloScoreVal').textContent = soloScore;
+                penaltyNote = " (-4 penalty)";
+            }
+            recordSoloStat(currentSoloQ, 'stall', hadPenalty ? -4 : 0, elapsed, hadPenalty, "");
+            soloBuzzedEarly = false;
+
+            const fb = document.getElementById('soloFeedback');
+            fb.classList.remove('hidden');
+            fb.className = "p-4 rounded-md text-xs sm:text-sm font-medium bg-rose-50 dark:bg-rose-950/70 border border-rose-300 dark:border-rose-800 text-rose-800 dark:text-rose-200";
+            fb.innerHTML = `<strong>Stalled.${penaltyNote}</strong> Answer: ${currentSoloQ ? currentSoloQ.answer : ''}`;
+            renderMath(fb);
+            document.getElementById('soloBuzzBtn').disabled = true;
+            document.getElementById('soloAnswerInput').disabled = true;
+            document.getElementById('soloMicBtn').disabled = true;
+            document.getElementById('soloSubmitBtn').disabled = true;
+        }
+
+        function startQuestionFlow(questionText, qType, isContest = false) {
+            clearAllTimers();
+            isQuestionFinishedReading = false;
+
+            const timingMode = document.getElementById('timerModeSelect').value;
+            const ttsEnabled = document.getElementById('ttsToggle').checked;
+            const isBonus = qType.toLowerCase() === 'bonus';
+            const limitSeconds = isBonus ? 20 : 5;
+
+            const displayEl = document.getElementById(isContest ? 'contestTimerDisplay' : 'timerDisplay');
+            const statusTextEl = document.getElementById(isContest ? 'contestTimerStatusText' : 'timerStatusText');
+
+            if (timingMode === 'timed') {
+                displayEl.classList.remove('hidden');
+                statusTextEl.textContent = "Reading...";
+            } else {
+                displayEl.classList.add('hidden');
+            }
+
+            const markReadingCompleteAndStartTimer = () => {
+                isQuestionFinishedReading = true;
+                if (document.getElementById('timerModeSelect').value !== 'timed') return;
+
+                let remaining = limitSeconds;
+                statusTextEl.textContent = `${remaining}s`;
+
+                countdownInterval = setInterval(() => {
+                    remaining--;
+                    if (remaining > 0) {
+                        statusTextEl.textContent = `${remaining}s`;
+                    } else {
+                        clearInterval(countdownInterval);
+                        countdownInterval = null;
+                        statusTextEl.textContent = "Time's up";
+                        if (!isContest) {
+                            handleSoloTimeExpired(isBonus);
+                        } else {
+                            handleContestTimeout("Time's up");
+                        }
+                    }
+                }, 1000);
+            };
+
+            if (ttsEnabled && 'speechSynthesis' in window) {
+                const cleanSpeech = questionText.replace(/[$_*#]/g, '');
+                const utterance = new SpeechSynthesisUtterance(cleanSpeech);
+                utterance.rate = 1.05;
+                utterance.onend = () => { markReadingCompleteAndStartTimer(); };
+                utterance.onerror = () => { markReadingCompleteAndStartTimer(); };
+                window.speechSynthesis.speak(utterance);
+            } else {
+                const delayMs = estimateSilentReadingMs(questionText);
+                readingTimeout = setTimeout(() => {
+                    readingTimeout = null;
+                    markReadingCompleteAndStartTimer();
+                }, delayMs);
+            }
+        }
+
+        function handleSoloTimeExpired(isBonus) {
+            recordSoloStat(currentSoloQ, 'timeout', 0, null, false, "");
+            const fb = document.getElementById('soloFeedback');
+            fb.classList.remove('hidden');
+            fb.className = "p-4 rounded-md text-xs sm:text-sm font-medium bg-amber-50 dark:bg-amber-950/70 border border-amber-300 dark:border-amber-800 text-amber-800 dark:text-amber-200";
+            fb.innerHTML = `<strong>Time's up.</strong> Answer: ${currentSoloQ ? currentSoloQ.answer : ''}`;
+            document.getElementById('soloBuzzBtn').disabled = true;
+            document.getElementById('soloAnswerInput').disabled = true;
+            document.getElementById('soloMicBtn').disabled = true;
+            document.getElementById('soloSubmitBtn').disabled = true;
+            renderMath(fb);
+        }
+
+        function revealSoloAnswer() {
+            if (!currentSoloQ) return;
+            clearAllTimers();
+            const fb = document.getElementById('soloFeedback');
+            fb.classList.remove('hidden');
+            fb.className = "p-4 rounded-md text-xs sm:text-sm font-medium bg-slate-200 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-200";
+            fb.innerHTML = `<strong>Answer:</strong> ${currentSoloQ.answer}`;
+            renderMath(fb);
+            document.getElementById('soloBuzzBtn').disabled = true;
+            document.getElementById('soloAnswerInput').disabled = true;
+            document.getElementById('soloMicBtn').disabled = true;
+            document.getElementById('soloSubmitBtn').disabled = true;
+            document.getElementById('soloRevealBtn').classList.add('hidden');
+        }
+
+        function getCurrentSettingsFromUI() {
+            return {
+                division: selectedDivision,
+                difficulty: selectedDifficulty,
+                category: document.getElementById('categorySelect').value,
+                practice_format: document.getElementById('typeSelect').value,
+                source_mode: document.getElementById('sourceSelect').value,
+                timing_mode: document.getElementById('timerModeSelect').value,
+                penalties: document.getElementById('penaltiesSelect').value
+            };
+        }
+
+        async function onSettingsChange() {
+            resetPrefetch();
+            const isUntimed = document.getElementById('timerModeSelect').value === 'untimed';
+            if (isUntimed) {
+                clearAllTimers();
+                document.getElementById('timerDisplay').classList.add('hidden');
+                document.getElementById('contestTimerDisplay').classList.add('hidden');
+                if (currentSoloQ) document.getElementById('soloRevealBtn').classList.remove('hidden');
+            } else {
+                document.getElementById('soloRevealBtn').classList.add('hidden');
+            }
+
+            if (activeTab === 'contest' && myContestId && isRoomCreator) {
+                try {
+                    await safeFetchJSON('/contest/settings', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            contest_id: myContestId,
+                            team_name: myTeamName,
+                            settings: getCurrentSettingsFromUI()
+                        })
+                    });
+                } catch (e) { console.error(e); }
+            }
+        }
+
+        /* =========================================================================
+           KEYBOARD SHORTCUTS (Solo, Play vs Bot, Contest)
+           ========================================================================= */
+        document.addEventListener('keydown', (e) => {
+            if (!document.getElementById('welcomeGateModal').classList.contains('hidden')) return;
+            if (!document.getElementById('homeScreenModal').classList.contains('hidden')) return;
+            if (!document.getElementById('sessionReviewModal').classList.contains('hidden')) return;
+            if (!document.getElementById('studyBankModal').classList.contains('hidden')) return;
+            if (!document.getElementById('leaderboardModal').classList.contains('hidden')) return;
+            if (!document.getElementById('authModal').classList.contains('hidden')) return;
+
+            const isInputFocused = (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT');
+
+            if (e.key.toLowerCase() === 'v' && (!isInputFocused || e.target.value === '')) {
+                const micId = activeTab === 'solo' ? 'soloMicBtn' : (activeTab === 'bot' ? 'botMicBtn' : 'contestMicBtn');
+                const micBtn = document.getElementById(micId);
+                if (micBtn && !micBtn.disabled) {
+                    e.preventDefault();
+                    startVoiceRecognition(activeTab);
+                    return;
+                }
+            }
+
+            if (isInputFocused) return;
+
+            if (e.code === 'Space') {
+                e.preventDefault();
+                if (activeTab === 'solo') {
+                    const buzzBtn = document.getElementById('soloBuzzBtn');
+                    if (!buzzBtn.disabled) soloBuzz();
+                } else if (activeTab === 'bot') {
+                    const buzzBtn = document.getElementById('botPlayerBuzzBtn');
+                    if (!buzzBtn.disabled) playerBotBuzz();
+                } else {
+                    const buzzBtn = document.getElementById('contestBuzzBtn');
+                    if (!buzzBtn.disabled) contestBuzz();
+                }
+            } else if (e.key.toLowerCase() === 'b') {
+                e.preventDefault();
+                if (activeTab === 'solo') {
+                    const bonusBtn = document.getElementById('soloBonusBtn');
+                    if (bonusBtn && !bonusBtn.classList.contains('hidden') && !bonusBtn.disabled) {
+                        loadSoloBonus();
+                    }
+                } else if (activeTab === 'bot') {
+                    const bonusBtn = document.getElementById('botBonusBtn');
+                    if (bonusBtn && !bonusBtn.classList.contains('hidden') && !bonusBtn.disabled) {
+                        loadBotModePlayerBonus();
+                    }
+                } else {
+                    const bonusBtn = document.getElementById('contestBonusBtn');
+                    if (bonusBtn && !bonusBtn.classList.contains('hidden') && !bonusBtn.disabled) {
+                        pushContestQuestion('Bonus');
+                    }
+                }
+            } else if (e.key.toLowerCase() === 'n') {
+                e.preventDefault();
+                if (activeTab === 'solo') {
+                    loadSoloQuestion();
+                } else if (activeTab === 'bot') {
+                    if (!document.getElementById('botMatchScreen').classList.contains('hidden')) {
+                        const nextBtn = document.getElementById('botNextBtn');
+                        if (!nextBtn.disabled) loadNextBotTossup();
+                    }
+                } else {
+                    pushContestQuestion('Toss-up');
+                }
+            }
+        });
+
+        async function safeFetchJSON(url, options = {}) {
+            const response = await fetch(url, options);
+            const rawText = await response.text();
+            let data;
+            try { data = JSON.parse(rawText); } catch (err) { throw new Error("Server error."); }
+            if (!response.ok) { throw new Error(data.error || `Request failed (${response.status})`); }
+            return data;
+        }
+
+        function renderMath(el) {
+            if (window.renderMathInElement) {
+                renderMathInElement(el, {
+                    delimiters: [
+                        {left: "$$", right: "$$", display: true},
+                        {left: "$", right: "$", display: false}
+                    ]
+                });
+            }
+        }
+
+        /* =========================================================================
+           MODE SWITCHING (SOLO, PLAY VS. BOT, MATCH ROOM)
+           ========================================================================= */
+        let activeTab = 'solo';
+
+        function switchMode(mode, pushHistory = true) {
+            activeTab = mode;
+            clearAllTimers();
+
+            document.getElementById('soloView').classList.toggle('hidden', mode !== 'solo');
+            document.getElementById('botView').classList.toggle('hidden', mode !== 'bot');
+            document.getElementById('contestView').classList.toggle('hidden', mode !== 'contest');
+
+            document.getElementById('soloScorePanel').classList.toggle('hidden', mode !== 'solo');
+            document.getElementById('botScorePanel').classList.toggle('hidden', mode !== 'bot');
+            document.getElementById('contestScorePanel').classList.toggle('hidden', mode !== 'contest');
+
+            const indicatorMap = { solo: 'Solo', bot: 'Vs. Bot', contest: 'Match' };
+            document.getElementById('modeIndicator').textContent = indicatorMap[mode] || 'Solo';
+
+            const activeBtnClass = "px-3 py-1 rounded text-xs font-bold bg-indigo-600 text-white transition-colors";
+            const inactiveBtnClass = "px-3 py-1 rounded text-xs font-bold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors";
+
+            document.getElementById('tabSolo').className = mode === 'solo' ? activeBtnClass : inactiveBtnClass;
+            document.getElementById('tabBot').className = mode === 'bot' ? activeBtnClass : inactiveBtnClass;
+            document.getElementById('tabContest').className = mode === 'contest' ? activeBtnClass : inactiveBtnClass;
+
+            if (mode === 'solo') {
+                setSettingsInputsDisabled(false);
+                document.getElementById('settingsLockBadge').classList.add('hidden');
+                if (pushHistory) recordScreen('solo');
+            } else if (mode === 'bot') {
+                setSettingsInputsDisabled(false);
+                document.getElementById('settingsLockBadge').classList.add('hidden');
+                renderBotSelectionCards();
+                if (pushHistory) recordScreen('bot');
+            } else {
+                if (pushHistory) recordScreen(myContestId ? 'contest_room' : 'contest_lobby');
+            }
+        }
+
+        function setSettingsInputsDisabled(disabled) {
+            document.getElementById('categorySelect').disabled = disabled;
+            document.getElementById('typeSelect').disabled = disabled;
+            document.getElementById('sourceSelect').disabled = disabled;
+            document.getElementById('timerModeSelect').disabled = disabled;
+            document.getElementById('penaltiesSelect').disabled = disabled;
+        }
+
+        /* =========================================================================
+           PDF UPLOAD & PREFETCH BUFFER
+           ========================================================================= */
+        document.getElementById('uploadForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const files = document.getElementById('pdfFiles').files;
+            if (!files.length) return alert("Select PDF first.");
+            const formData = new FormData();
+            for (let f of files) formData.append('file', f);
+
+            try {
+                const res = await safeFetchJSON('/upload', { method: 'POST', body: formData });
+                alert(res.message);
+            } catch (err) { alert("Error: " + err.message); }
+        });
+
+        let currentSoloQ = null;
+        let soloScore = 0;
+
+        let recentQuestionTexts = [];
+        const maxRecentHistory = 30;
+
+        const staticFallbackBank = [
+            { category: "Biology", q_type: "Toss-up", question: "What double-membrane organelle is the primary site of ATP synthesis via oxidative phosphorylation in eukaryotic cells?", answer: "Mitochondria" },
+            { category: "Chemistry", q_type: "Toss-up", question: "What is the standard chemical symbol for the element tungsten?", answer: "W" },
+            { category: "Physics", q_type: "Toss-up", question: "What is the SI derived unit of force, equivalent to one kilogram meter per second squared?", answer: "Newton" },
+            { category: "Mathematics", q_type: "Toss-up", question: "What is the sum of the interior angles of a convex hexagon, in degrees?", answer: "720" },
+            { category: "Earth and Space", q_type: "Toss-up", question: "What is the name of the boundary between Earth's crust and mantle?", answer: "Mohorovicic discontinuity (Accept: Moho)" },
+            { category: "Energy", q_type: "Toss-up", question: "What nuclear process powers the Sun by combining hydrogen nuclei into helium?", answer: "Nuclear fusion" }
+        ];
+
+        function getBufferStorageKey() {
+            const cat = document.getElementById('categorySelect').value;
+            const fmt = document.getElementById('typeSelect').value;
+            const src = document.getElementById('sourceSelect').value;
+            const todayStr = new Date().toISOString().slice(0, 10);
+            return `sb_cache_${todayStr}_${selectedDivision}_${selectedDifficulty}_${cat}_${fmt}_${src}`;
+        }
+
+        function loadBufferFromStorage() {
+            try {
+                const key = getBufferStorageKey();
+                for (let i = 0; i < localStorage.length; i++) {
+                    const k = localStorage.key(i);
+                    if (k && k.startsWith('sb_cache_') && k !== key) {
+                        localStorage.removeItem(k);
+                    }
+                }
+                return JSON.parse(localStorage.getItem(key) || '[]');
+            } catch (e) {
+                return [];
+            }
+        }
+
+        function saveBufferToStorage(buf) {
+            try {
+                localStorage.setItem(getBufferStorageKey(), JSON.stringify(buf.slice(0, 10)));
+            } catch (e) {}
+        }
+
+        let questionBuffer = loadBufferFromStorage();
+        let isFetchingBuffer = false;
+
+        function resetPrefetch() {
+            questionBuffer = loadBufferFromStorage();
+            isFetchingBuffer = false;
+            refillClientBuffer();
+        }
+
+        async function refillClientBuffer() {
+            if (isFetchingBuffer || questionBuffer.length >= 6) return;
+            const targetKey = getBufferStorageKey();
+            isFetchingBuffer = true;
+
+            try {
+                const freshQ = await fetchQuestionFromServer();
+                if (freshQ && freshQ.question && !recentQuestionTexts.includes(freshQ.question)) {
+                    if (getBufferStorageKey() === targetKey) {
+                        questionBuffer.push(freshQ);
+                        saveBufferToStorage(questionBuffer);
+                    }
+                }
+            } catch (e) {
+                console.error(e);
+            } finally {
+                isFetchingBuffer = false;
+                if (questionBuffer.length < 6 && getBufferStorageKey() === targetKey) {
+                    refillClientBuffer();
+                }
+            }
+        }
+
+        async function getNextQuestionInstant() {
+            while (questionBuffer.length > 0) {
+                const q = questionBuffer.shift();
+                saveBufferToStorage(questionBuffer);
+                refillClientBuffer();
+                if (q && q.question && !recentQuestionTexts.includes(q.question)) {
+                    recentQuestionTexts.push(q.question);
+                    if (recentQuestionTexts.length > maxRecentHistory) recentQuestionTexts.shift();
+                    return q;
+                }
+            }
+
+            try {
+                const timeoutPromise = new Promise((_, reject) =>
+                    setTimeout(() => reject(new Error("Timeout")), 2500)
+                );
+                let freshQ = await Promise.race([fetchQuestionFromServer(), timeoutPromise]);
+                refillClientBuffer();
+
+                if (freshQ && freshQ.question) {
+                    recentQuestionTexts.push(freshQ.question);
+                    if (recentQuestionTexts.length > maxRecentHistory) recentQuestionTexts.shift();
+                }
+                return freshQ;
+            } catch (e) {
+                refillClientBuffer();
+                const selCat = document.getElementById('categorySelect').value;
+                const matching = staticFallbackBank.filter(item => selCat === 'All Topics' || selCat === 'Weakness Focus' || item.category === selCat);
+                const pool = matching.length > 0 ? matching : staticFallbackBank;
+                const fallbackQ = pool[Math.floor(Math.random() * pool.length)];
+                if (fallbackQ && fallbackQ.question) {
+                    recentQuestionTexts.push(fallbackQ.question);
+                    if (recentQuestionTexts.length > maxRecentHistory) recentQuestionTexts.shift();
+                }
+                return fallbackQ;
+            }
+        }
+
+        function getRequestedSoloQType() {
+            const format = document.getElementById('typeSelect').value;
+            return format === 'Combined' ? 'Toss-up' : format;
+        }
+
+        async function fetchQuestionFromServer(overrideCategory = null, overrideQType = null, overrideChunkId = null) {
+            let activeCategory = overrideCategory || document.getElementById('categorySelect').value;
+            if (activeCategory === 'Weakness Focus') {
+                activeCategory = getWeakestCategory();
+            }
+
+            return await safeFetchJSON('/generate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    division: selectedDivision,
+                    difficulty: selectedDifficulty,
+                    category: activeCategory,
+                    q_type: overrideQType || getRequestedSoloQType(),
+                    mode: document.getElementById('sourceSelect').value,
+                    chunk_id: overrideChunkId
+                })
+            });
+        }
+
+        /* =========================================================================
+           SOLO GAMEPLAY
+           ========================================================================= */
+        function displaySoloQuestion(qObj) {
+            currentSoloQ = qObj;
+            soloBuzzedEarly = false;
+            soloQuestionStartedAt = Date.now();
+            const isBonus = qObj.q_type.toLowerCase() === 'bonus';
+            const isUntimed = document.getElementById('timerModeSelect').value === 'untimed';
+
+            document.getElementById('soloBadge').textContent = `${qObj.category} - ${qObj.q_type}`;
+            const qBox = document.getElementById('soloQuestionBox');
+            qBox.textContent = qObj.question;
+            renderMath(qBox);
+
+            const bookmarkBtn = document.getElementById('bookmarkBtn');
+            bookmarkBtn.classList.remove('hidden');
+            if (isBookmarked(qObj.question)) {
+                bookmarkBtn.textContent = "Starred";
+                bookmarkBtn.className = "bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 font-semibold px-3.5 py-2 rounded-md transition-colors text-xs border border-indigo-300 dark:border-indigo-700";
+            } else {
+                bookmarkBtn.textContent = "Star";
+                bookmarkBtn.className = "bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 font-semibold px-3.5 py-2 rounded-md transition-colors text-xs border border-slate-300 dark:border-slate-700";
+            }
+
+            document.getElementById('soloBonusBtn').classList.add('hidden');
+            document.getElementById('soloFeedback').classList.add('hidden');
+            document.getElementById('soloFeedback').innerHTML = '';
+            document.getElementById('soloAnswerInput').value = '';
+
+            document.getElementById('soloRevealBtn').classList.toggle('hidden', !isUntimed);
+
+            if (isBonus) {
+                document.getElementById('soloBuzzBtn').disabled = true;
+                document.getElementById('soloAnswerInput').disabled = false;
+                document.getElementById('soloMicBtn').disabled = false;
+                document.getElementById('soloAnswerInput').placeholder = isUntimed ? "Type answer..." : "Type answer (20s)...";
+                document.getElementById('soloSubmitBtn').disabled = false;
+                document.getElementById('soloAnswerInput').focus();
+            } else {
+                document.getElementById('soloBuzzBtn').disabled = false;
+                document.getElementById('soloAnswerInput').disabled = true;
+                document.getElementById('soloMicBtn').disabled = true;
+                document.getElementById('soloAnswerInput').placeholder = "Buzz first...";
+                document.getElementById('soloSubmitBtn').disabled = true;
+            }
+
+            startQuestionFlow(qObj.question, qObj.q_type, false);
+        }
+
+        async function loadSoloQuestion() {
+            clearAllTimers();
+            const btn = document.getElementById('soloNextBtn');
+            const qBox = document.getElementById('soloQuestionBox');
+            const feedback = document.getElementById('soloFeedback');
+
+            feedback.classList.add('hidden');
+            feedback.innerHTML = '';
+            document.getElementById('soloAnswerInput').value = '';
+            document.getElementById('soloAnswerInput').disabled = true;
+            document.getElementById('soloMicBtn').disabled = true;
+            document.getElementById('soloSubmitBtn').disabled = true;
+            document.getElementById('soloBonusBtn').classList.add('hidden');
+            document.getElementById('soloRevealBtn').classList.add('hidden');
+            document.getElementById('bookmarkBtn').classList.add('hidden');
+
+            try {
+                btn.disabled = true;
+                btn.textContent = "Loading...";
+                const nextQ = await getNextQuestionInstant();
+                displaySoloQuestion(nextQ);
+            } catch (err) {
+                qBox.innerHTML = `<span class="text-rose-600 dark:text-rose-400 font-normal">Error: ${err.message}</span>`;
+            } finally {
+                btn.disabled = false;
+                btn.textContent = "Next (N)";
+            }
+        }
+
+        async function loadSoloBonus() {
+            if (!currentSoloQ) return;
+            clearAllTimers();
+            const bonusBtn = document.getElementById('soloBonusBtn');
+            const qBox = document.getElementById('soloQuestionBox');
+            const feedback = document.getElementById('soloFeedback');
+            const matchedCategory = currentSoloQ.category;
+            const matchedChunkId = currentSoloQ.chunk_id || null;
+
+            feedback.classList.add('hidden');
+            feedback.innerHTML = '';
+            document.getElementById('soloRevealBtn').classList.add('hidden');
+            bonusBtn.disabled = true;
+            qBox.innerHTML = `<span class="text-slate-500 dark:text-slate-400 font-normal">Loading bonus...</span>`;
+
+            try {
+                const bonusQ = await fetchQuestionFromServer(matchedCategory, 'Bonus', matchedChunkId);
+                displaySoloQuestion(bonusQ);
+            } catch (err) {
+                const fallbackBonus = {
+                    category: matchedCategory,
+                    q_type: "Bonus",
+                    question: `What is a primary principle governing ${matchedCategory}?`,
+                    answer: "Refer to standard definition"
+                };
+                displaySoloQuestion(fallbackBonus);
+            } finally {
+                bonusBtn.disabled = false;
+            }
+        }
+
+        function soloBuzz() {
+            if (!currentSoloQ) return;
+            soloBuzzedEarly = !isQuestionFinishedReading;
+            clearAllTimers();
+
+            document.getElementById('soloBuzzBtn').disabled = true;
+            document.getElementById('soloAnswerInput').disabled = false;
+            document.getElementById('soloMicBtn').disabled = false;
+            document.getElementById('soloAnswerInput').placeholder = "Type your answer...";
+            document.getElementById('soloSubmitBtn').disabled = false;
+            document.getElementById('soloAnswerInput').focus();
+
+            if (currentSoloQ.q_type.toLowerCase() !== 'bonus') {
+                startPostBuzzNaturalPause(false);
+            }
+        }
+
+        /* =========================================================================
+           LOCAL INSTANT GRADING ENGINE (Used by Solo & Play vs. Bot)
+           ========================================================================= */
+        function levenshteinDistance(a, b) {
+            const dp = Array.from({ length: a.length + 1 }, (_, i) => [i]);
+            for (let j = 0; j <= b.length; j++) dp[0][j] = j;
+            for (let i = 1; i <= a.length; i++) {
+                for (let j = 1; j <= b.length; j++) {
+                    const cost = a[i - 1] === b[j - 1] ? 0 : 1;
+                    dp[i][j] = Math.min(dp[i - 1][j] + 1, dp[i][j - 1] + 1, dp[i - 1][j - 1] + cost);
+                }
+            }
+            return dp[a.length][b.length];
+        }
+
+        function gradeLocallyAndInstant(userRaw, questionObj) {
+            const userAns = userRaw.trim();
+            if (!userAns || !questionObj) return { correct: false };
+
+            let officialAnswers = [questionObj.answer];
+            if (Array.isArray(questionObj.accept)) {
+                officialAnswers.push(...questionObj.accept);
+            }
+            
+            const matchAcceptTag = questionObj.answer.match(/\(accept:\s*([^)]+)\)/i);
+            if (matchAcceptTag) {
+                const extraAccepts = matchAcceptTag[1].split(/[,/]/).map(s => s.trim());
+                officialAnswers.push(...extraAccepts);
+            }
+
+            const normalize = str => str.toLowerCase()
+                .replace(/\(accept:.*?\)/gi, '')
+                .replace(/[^a-z0-9\s]/g, '')
+                .replace(/\b(the|a|an)\b/g, '')
+                .trim();
+
+            const u = normalize(userAns);
+
+            for (let rawOpt of officialAnswers) {
+                const o = normalize(rawOpt);
+                if (!o) continue;
+
+                if (u === o) return { correct: true };
+
+                const isMC = /\b[WXYZ]\)/.test(questionObj.question);
+                if (isMC && u.length === 1 && o.startsWith(u)) return { correct: true };
+
+                if (u + 's' === o || o + 's' === u || u + 'es' === o || o + 'es' === u) return { correct: true };
+
+                if (o.length >= 6 && levenshteinDistance(u, o) <= 2) return { correct: true };
+                if (o.length >= 4 && levenshteinDistance(u, o) <= 1) return { correct: true };
+            }
+
+            return { correct: false };
+        }
+
+        function submitSoloAnswer() {
+            const ans = document.getElementById('soloAnswerInput').value.trim();
+            if (!ans || !currentSoloQ) return;
+
+            clearAllTimers();
+            document.getElementById('timerDisplay').classList.add('hidden');
+            document.getElementById('soloRevealBtn').classList.add('hidden');
+
+            const elapsed = soloQuestionStartedAt ? (Date.now() - soloQuestionStartedAt) / 1000 : null;
+            const gradeResult = gradeLocallyAndInstant(ans, currentSoloQ);
+
+            const fb = document.getElementById('soloFeedback');
+            fb.classList.remove('hidden');
+            const isBonus = currentSoloQ.q_type.toLowerCase() === 'bonus';
+            const practiceFormat = document.getElementById('typeSelect').value;
+            const penaltiesEnabled = document.getElementById('penaltiesSelect').value === 'yes';
+
+            if (gradeResult.correct) {
+                soloBuzzedEarly = false;
+                const pts = isBonus ? 10 : 4;
+                soloScore += pts;
+                document.getElementById('soloScoreVal').textContent = soloScore;
+                recordSoloStat(currentSoloQ, 'correct', pts, elapsed, false, ans);
+                
+                fb.className = "p-4 rounded-md text-xs sm:text-sm font-medium bg-emerald-50 dark:bg-emerald-950/70 border border-emerald-300 dark:border-emerald-800 text-emerald-800 dark:text-emerald-200";
+                fb.innerHTML = `<strong>Correct (+${pts}).</strong> Answer: ${currentSoloQ.answer}`;
+                renderMath(fb);
+                
+                document.getElementById('soloAnswerInput').disabled = true;
+                document.getElementById('soloMicBtn').disabled = true;
+                document.getElementById('soloSubmitBtn').disabled = true;
+
+                if (!isBonus && practiceFormat === 'Combined') {
+                    const bonusBtn = document.getElementById('soloBonusBtn');
+                    bonusBtn.textContent = `Bonus (+10) [B]`;
+                    bonusBtn.classList.remove('hidden');
+                }
+            } else {
+                const hadPenalty = Boolean(!isBonus && penaltiesEnabled && soloBuzzedEarly);
+                let penaltyNote = "";
+                if (hadPenalty) {
+                    soloScore -= 4;
+                    document.getElementById('soloScoreVal').textContent = soloScore;
+                    penaltyNote = " <strong>(-4 penalty)</strong>";
+                }
+                recordSoloStat(currentSoloQ, 'incorrect', hadPenalty ? -4 : 0, elapsed, hadPenalty, ans);
+                soloBuzzedEarly = false;
+
+                fb.className = "p-4 rounded-md text-xs sm:text-sm font-medium bg-rose-50 dark:bg-rose-950/70 border border-rose-300 dark:border-rose-800 text-rose-800 dark:text-rose-200";
+                fb.innerHTML = `<strong>Incorrect${penaltyNote}.</strong> Answer: ${currentSoloQ.answer}`;
+                renderMath(fb);
+                
+                document.getElementById('soloAnswerInput').disabled = true;
+                document.getElementById('soloMicBtn').disabled = true;
+                document.getElementById('soloSubmitBtn').disabled = true;
+            }
+        }
+
+        /* =========================================================================
+           PLAY VS. WINTER BOTS ENGINE
+           ========================================================================= */
+        let selectedBot = null;
+        let botPlayerScore = 0;
+        let botAiScore = 0;
+        let botRoundCurrent = 0;
+        let botRoundTotal = 10;
+        let currentBotQuestion = null;
+
+        // Progressive reading & buzzer state
+        let botWordsArray = [];
+        let botCurrentWordIdx = 0;
+        let botTargetBuzzWordIdx = null;
+        let botWillAnswerCorrectly = false;
+        let botHasBuzzedThisTossup = false;
+        let botIsReadingFinished = false;
+        let playerBuzzedEarlyInBotMode = false;
+        let botQuestionLocked = false;
+
+        // Bot timers
+        let botWordRevealInterval = null;
+        let botAfterReadTimeout = null;
+        let botBannerTimeout = null;
+        let botPostReadCountdownInterval = null;
+        let botPlayerStallTimeout = null;
+        let botPlayerStallInterval = null;
+        let botPlayerTypingTimeout = null;
+
+        function clearBotTimers() {
+            if (botWordRevealInterval) { clearInterval(botWordRevealInterval); botWordRevealInterval = null; }
+            if (botAfterReadTimeout) { clearTimeout(botAfterReadTimeout); botAfterReadTimeout = null; }
+            if (botBannerTimeout) { clearTimeout(botBannerTimeout); botBannerTimeout = null; }
+            if (botPostReadCountdownInterval) { clearInterval(botPostReadCountdownInterval); botPostReadCountdownInterval = null; }
+            if (botPlayerStallTimeout) { clearTimeout(botPlayerStallTimeout); botPlayerStallTimeout = null; }
+            if (botPlayerStallInterval) { clearInterval(botPlayerStallInterval); botPlayerStallInterval = null; }
+            if (botPlayerTypingTimeout) { clearTimeout(botPlayerTypingTimeout); botPlayerTypingTimeout = null; }
+        }
+
+        function renderBotSelectionCards() {
+            const grid = document.getElementById('botCharacterGrid');
+            if (!grid) return;
+
+            grid.innerHTML = Object.values(WINTER_BOTS).map(bot => {
+                const fallbackUri = getFallbackAvatarDataUri(bot);
+                return `
+                    <div class="p-5 rounded-lg border-2 border-slate-300 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 hover:border-indigo-500 dark:hover:border-indigo-500 transition-all flex flex-col justify-between gap-4">
+                        <div class="flex items-start gap-4">
+                            <img src="${bot.avatar}" alt="${bot.name}"
+                                onerror="this.onerror=null;this.src='${fallbackUri}';"
+                                class="w-16 h-16 rounded-lg object-cover bg-slate-200 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 shrink-0"/>
+                            <div class="space-y-1 min-w-0">
+                                <div class="flex items-center gap-2 flex-wrap">
+                                    <h3 class="font-extrabold text-base text-slate-900 dark:text-white">${bot.name}</h3>
+                                    <span class="text-[11px] font-bold px-2 py-0.5 rounded bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 ${bot.badgeColor}">
+                                        ${bot.title} — ${bot.accuracyLabel}
+                                    </span>
+                                </div>
+                                <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">${bot.bio}</p>
+                            </div>
+                        </div>
+
+                        <div class="p-3 rounded-md bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs text-slate-700 dark:text-slate-300">
+                            <strong class="text-slate-900 dark:text-white">Playstyle:</strong> ${bot.playstyle}
+                        </div>
+
+                        <button onclick="startBotMatch('${bot.id}')" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2.5 rounded-md text-xs transition-colors">
+                            Challenge ${bot.name}
+                        </button>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function triggerBotSpeech(triggerKey) {
+            if (!selectedBot) return;
+            const lines = selectedBot.lines[triggerKey];
+            if (!lines || lines.length === 0) return;
+
+            const randomLine = lines[Math.floor(Math.random() * lines.length)];
+            const bubbleEl = document.getElementById('botChatBubbleText');
+            if (!bubbleEl) return;
+
+            // Re-trigger smooth CSS pop animation
+            bubbleEl.classList.remove('animate-bubblePop');
+            void bubbleEl.offsetWidth;
+            bubbleEl.textContent = `"${randomLine}"`;
+            bubbleEl.classList.add('animate-bubblePop');
+        }
+
+        function updateBotScoreboardUI() {
+            document.getElementById('botModePlayerScoreVal').textContent = botPlayerScore;
+            document.getElementById('botModeBotScoreVal').textContent = botAiScore;
+
+            const roundText = `${botRoundCurrent} / ${botRoundTotal}`;
+            document.getElementById('botRoundCounter').textContent = `Toss-up ${roundText}`;
+            document.getElementById('botSidebarRoundText').textContent = roundText;
+
+            const pct = botRoundTotal > 0 ? Math.min(100, Math.round((botRoundCurrent / botRoundTotal) * 100)) : 0;
+            document.getElementById('botSidebarProgressBar').style.width = `${pct}%`;
+        }
+
+        function startBotMatch(botId) {
+            selectedBot = WINTER_BOTS[botId];
+            if (!selectedBot) return;
+
+            botPlayerScore = 0;
+            botAiScore = 0;
+            botRoundCurrent = 0;
+            botRoundTotal = parseInt(document.getElementById('botMatchTargetSelect').value, 10) || 10;
+            currentBotQuestion = null;
+
+            // Populate Header & Sidebar Avatars
+            const fallbackUri = getFallbackAvatarDataUri(selectedBot);
+            const activeAvatar = document.getElementById('activeBotAvatar');
+            activeAvatar.onerror = () => { activeAvatar.onerror = null; activeAvatar.src = fallbackUri; };
+            activeAvatar.src = selectedBot.avatar;
+
+            const sidebarAvatar = document.getElementById('sidebarBotAvatar');
+            sidebarAvatar.onerror = () => { sidebarAvatar.onerror = null; sidebarAvatar.src = fallbackUri; };
+            sidebarAvatar.src = selectedBot.avatar;
+
+            document.getElementById('activeBotName').textContent = selectedBot.name;
+            document.getElementById('activeBotTitle').textContent = selectedBot.title;
+            document.getElementById('activeBotBadgeRating').textContent = selectedBot.accuracyLabel;
+
+            document.getElementById('sidebarBotName').textContent = selectedBot.name;
+            document.getElementById('sidebarBotRating').textContent = `${selectedBot.title} (${selectedBot.accuracyLabel})`;
+            document.getElementById('botMatchProgressBox').classList.remove('hidden');
+
+            // Reset UI elements
+            document.getElementById('botSelectionScreen').classList.add('hidden');
+            document.getElementById('botMatchScreen').classList.remove('hidden');
+            document.getElementById('botBuzzedBanner').classList.add('hidden');
+            document.getElementById('botNegBadge').classList.add('hidden');
+            document.getElementById('botBonusBtn').classList.add('hidden');
+            document.getElementById('botFeedback').classList.add('hidden');
+            document.getElementById('botPlayerBuzzBtn').disabled = true;
+            document.getElementById('botAnswerInput').disabled = true;
+            document.getElementById('botAnswerInput').value = '';
+            document.getElementById('botMicBtn').disabled = true;
+            document.getElementById('botSubmitBtn').disabled = true;
+
+            const nextBtn = document.getElementById('botNextBtn');
+            nextBtn.disabled = false;
+            nextBtn.textContent = "Next (N)";
+
+            document.getElementById('botQBadge').textContent = "Ready";
+            document.getElementById('botQuestionBox').innerHTML = `Press <code class="bg-slate-200 dark:bg-slate-800 px-1.5 py-0.5 rounded font-mono text-sm text-slate-800 dark:text-slate-200">N</code> or click <strong>Next</strong> to start Toss-up 1.`;
+
+            updateBotScoreboardUI();
+            triggerBotSpeech('onMatchStart');
+        }
+
+        function exitBotMatch() {
+            clearAllTimers();
+            selectedBot = null;
+            document.getElementById('botMatchScreen').classList.add('hidden');
+            document.getElementById('botSelectionScreen').classList.remove('hidden');
+            document.getElementById('botMatchProgressBox').classList.add('hidden');
+            document.getElementById('sidebarBotName').textContent = "Select Bot";
+            document.getElementById('sidebarBotRating').textContent = "---";
+            document.getElementById('sidebarBotAvatar').src = "";
+            document.getElementById('botModePlayerScoreVal').textContent = "0";
+            document.getElementById('botModeBotScoreVal').textContent = "0";
+            renderBotSelectionCards();
+        }
+
+        async function loadNextBotTossup() {
+            if (!selectedBot) return;
+            clearAllTimers();
+
+            // Check if match is already completed
+            if (botRoundCurrent >= botRoundTotal) {
+                finishBotMatch();
+                return;
+            }
+
+            const nextBtn = document.getElementById('botNextBtn');
+            const qBox = document.getElementById('botQuestionBox');
+            const fb = document.getElementById('botFeedback');
+
+            fb.classList.add('hidden');
+            fb.innerHTML = '';
+            document.getElementById('botBuzzedBanner').classList.add('hidden');
+            document.getElementById('botNegBadge').classList.add('hidden');
+            document.getElementById('botBonusBtn').classList.add('hidden');
+            document.getElementById('botAnswerInput').value = '';
+            document.getElementById('botAnswerInput').disabled = true;
+            document.getElementById('botMicBtn').disabled = true;
+            document.getElementById('botSubmitBtn').disabled = true;
+            document.getElementById('botPlayerBuzzBtn').disabled = true;
+
+            try {
+                nextBtn.disabled = true;
+                nextBtn.textContent = "Loading...";
+
+                // Always fetch a Toss-up for the competitive round
+                let qObj = null;
+                if (getRequestedSoloQType() === 'Toss-up') {
+                    qObj = await getNextQuestionInstant();
+                } else {
+                    qObj = await fetchQuestionFromServer(null, 'Toss-up', null);
+                }
+
+                botRoundCurrent += 1;
+                updateBotScoreboardUI();
+                beginBotTossupRound(qObj);
+            } catch (err) {
+                qBox.innerHTML = `<span class="text-rose-600 dark:text-rose-400">Error loading question: ${err.message}</span>`;
+            } finally {
+                nextBtn.disabled = false;
+                nextBtn.textContent = botRoundCurrent >= botRoundTotal ? "Finish Match" : "Next (N)";
+            }
+        }
+
+        function beginBotTossupRound(qObj) {
+            currentBotQuestion = qObj;
+            botHasBuzzedThisTossup = false;
+            botIsReadingFinished = false;
+            playerBuzzedEarlyInBotMode = false;
+            botQuestionLocked = false;
+
+            document.getElementById('botQBadge').textContent = `${qObj.category} - Toss-up`;
+            document.getElementById('botPlayerBuzzBtn').disabled = false;
+
+            // Pre-roll whether the bot will answer correctly based on its accuracy percentage
+            botWillAnswerCorrectly = Math.random() < selectedBot.accuracy;
+
+            // Split question into words for progressive moderator reading
+            botWordsArray = qObj.question.trim().split(/\s+/);
+            botCurrentWordIdx = 0;
+
+            // Calculate target buzz word index based on selected bot's playstyle
+            if (selectedBot.buzzStrategy.type === 'fraction') {
+                const { min, max } = selectedBot.buzzStrategy;
+                const frac = min + Math.random() * (max - min);
+                botTargetBuzzWordIdx = Math.max(2, Math.floor(botWordsArray.length * frac));
+            } else {
+                // Rudolph waits until after reading finishes
+                botTargetBuzzWordIdx = null;
+            }
+
+            // Optional Read Aloud TTS
+            if (document.getElementById('ttsToggle').checked && 'speechSynthesis' in window) {
+                const cleanSpeech = qObj.question.replace(/[$_*#]/g, '');
+                const utterance = new SpeechSynthesisUtterance(cleanSpeech);
+                utterance.rate = 1.08;
+                window.speechSynthesis.speak(utterance);
+            }
+
+            startProgressiveBotReading();
+        }
+
+        function startProgressiveBotReading() {
+            const qBox = document.getElementById('botQuestionBox');
+            const timerDisp = document.getElementById('botTimerDisplay');
+            const timerText = document.getElementById('botTimerStatusText');
+
+            timerDisp.classList.remove('hidden');
+            timerText.textContent = "Reading...";
+
+            // Reveal words progressively (~235ms per word, realistic Science Bowl moderator pace)
+            const renderNextWord = () => {
+                if (botQuestionLocked) return;
+
+                if (botCurrentWordIdx < botWordsArray.length) {
+                    botCurrentWordIdx++;
+                    qBox.textContent = botWordsArray.slice(0, botCurrentWordIdx).join(' ');
+
+                    // Check if bot interrupts at its target word index
+                    if (!botHasBuzzedThisTossup && botTargetBuzzWordIdx !== null && botCurrentWordIdx >= botTargetBuzzWordIdx) {
+                        clearInterval(botWordRevealInterval);
+                        botWordRevealInterval = null;
+                        triggerBotBuzz();
+                        return;
+                    }
+                } else {
+                    // Finished reading full question
+                    clearInterval(botWordRevealInterval);
+                    botWordRevealInterval = null;
+                    botIsReadingFinished = true;
+                    renderMath(qBox);
+                    onBotTossupReadingCompleted();
+                }
+            };
+
+            // Render first word immediately so box isn't empty
+            renderNextWord();
+            if (!botQuestionLocked && !botHasBuzzedThisTossup) {
+                botWordRevealInterval = setInterval(renderNextWord, 235);
+            }
+        }
+
+        function onBotTossupReadingCompleted() {
+            if (botQuestionLocked) return;
+
+            const timerDisp = document.getElementById('botTimerDisplay');
+            const timerText = document.getElementById('botTimerStatusText');
+            const timingMode = document.getElementById('timerModeSelect').value;
+
+            // If Rudolph hasn't buzzed yet, schedule his polite 1.5s post-reading buzz
+            if (!botHasBuzzedThisTossup && selectedBot.buzzStrategy.type === 'after_read') {
+                botAfterReadTimeout = setTimeout(() => {
+                    if (!botQuestionLocked && !botHasBuzzedThisTossup) {
+                        triggerBotBuzz();
+                    }
+                }, selectedBot.buzzStrategy.delayMs);
+            }
+
+            if (timingMode === 'timed') {
+                let remaining = 5;
+                timerDisp.classList.remove('hidden');
+                timerText.textContent = `${remaining}s`;
+
+                botPostReadCountdownInterval = setInterval(() => {
+                    remaining--;
+                    if (remaining > 0) {
+                        timerText.textContent = `${remaining}s`;
+                    } else {
+                        clearInterval(botPostReadCountdownInterval);
+                        botPostReadCountdownInterval = null;
+                        handleBotTossupDead();
+                    }
+                }, 1000);
+            } else {
+                timerDisp.classList.add('hidden');
+            }
+        }
+
+        function triggerBotBuzz() {
+            if (botQuestionLocked || botHasBuzzedThisTossup) return;
+            botHasBuzzedThisTossup = true;
+
+            // Pause question reading, TTS, and countdown timers
+            clearAllTimers();
+            const isBotInterrupt = !botIsReadingFinished;
+
+            // Lock out player during bot's 1.5s buzz resolution
+            document.getElementById('botPlayerBuzzBtn').disabled = true;
+            document.getElementById('botNextBtn').disabled = true;
+
+            const timerDisp = document.getElementById('botTimerDisplay');
+            const timerText = document.getElementById('botTimerStatusText');
+            timerDisp.classList.remove('hidden');
+            timerText.textContent = `${selectedBot.name} buzzed!`;
+
+            const banner = document.getElementById('botBuzzedBanner');
+            banner.textContent = `${selectedBot.name} buzzed!`;
+            banner.classList.remove('hidden');
+
+            // Wait ~1.5 seconds while bot "answers"
+            botBannerTimeout = setTimeout(() => {
+                banner.classList.add('hidden');
+                document.getElementById('botNextBtn').disabled = false;
+
+                if (botWillAnswerCorrectly) {
+                    resolveBotCorrectTossup();
+                } else {
+                    resolveBotWrongOrNeg(isBotInterrupt);
+                }
+            }, 1500);
+        }
+
+        function resolveBotCorrectTossup() {
+            botQuestionLocked = true;
+            document.getElementById('botTimerDisplay').classList.add('hidden');
+
+            // Reveal full question text
+            const qBox = document.getElementById('botQuestionBox');
+            qBox.textContent = currentBotQuestion.question;
+            renderMath(qBox);
+
+            // Award bot +4 for Toss-up
+            botAiScore += 4;
+
+            // Simulate bot playing the Bonus question using its accuracy percentage (+10 or 0)
+            const botGetsBonus = Math.random() < selectedBot.accuracy;
+            const bonusPts = botGetsBonus ? 10 : 0;
+            botAiScore += bonusPts;
+
+            updateBotScoreboardUI();
+            triggerBotSpeech('onBotCorrect');
+
+            const fb = document.getElementById('botFeedback');
+            fb.classList.remove('hidden');
+            fb.className = "p-4 rounded-md text-xs sm:text-sm font-medium bg-rose-50 dark:bg-rose-950/70 border border-rose-300 dark:border-rose-800 text-rose-800 dark:text-rose-200";
+            fb.innerHTML = `<strong>${selectedBot.name} stole the toss-up (+4)</strong> and ${botGetsBonus ? `converted the Bonus (+10)!` : `missed the Bonus (+0).`} <br/>Answer: <strong>${currentBotQuestion.answer}</strong>`;
+            renderMath(fb);
+
+            checkIfBotMatchEnded();
+        }
+
+        function resolveBotWrongOrNeg(wasInterrupt) {
+            const penaltiesEnabled = document.getElementById('penaltiesSelect').value === 'yes';
+            const isNeg = wasInterrupt && penaltiesEnabled;
+
+            if (isNeg) {
+                botAiScore -= 4;
+                updateBotScoreboardUI();
+                document.getElementById('botNegBadge').classList.remove('hidden');
+                triggerBotSpeech('onBotNeg');
+            } else {
+                triggerBotSpeech('onBotNeg');
+            }
+
+            const fb = document.getElementById('botFeedback');
+            fb.classList.remove('hidden');
+            fb.className = "p-4 rounded-md text-xs sm:text-sm font-medium bg-amber-50 dark:bg-amber-950/70 border border-amber-300 dark:border-amber-800 text-amber-800 dark:text-amber-200";
+            fb.innerHTML = isNeg
+                ? `<strong>${selectedBot.name} interrupted and NEGGED (-4)!</strong> Read/listen to the rest unopposed and buzz in!`
+                : `<strong>${selectedBot.name} answered incorrectly!</strong> Finish the toss-up unopposed and buzz in!`;
+
+            // Allow player to hear/read the rest of the toss-up unopposed and buzz in
+            document.getElementById('botPlayerBuzzBtn').disabled = false;
+
+            if (document.getElementById('ttsToggle').checked && 'speechSynthesis' in window && !botIsReadingFinished) {
+                const remainingWords = botWordsArray.slice(botCurrentWordIdx).join(' ').replace(/[$_*#]/g, '');
+                if (remainingWords) {
+                    const utterance = new SpeechSynthesisUtterance(remainingWords);
+                    utterance.rate = 1.08;
+                    window.speechSynthesis.speak(utterance);
+                }
+            }
+
+            if (!botIsReadingFinished) {
+                startProgressiveBotReading();
+            } else {
+                onBotTossupReadingCompleted();
+            }
+        }
+
+        function handleBotTossupDead() {
+            if (botQuestionLocked) return;
+            botQuestionLocked = true;
+            clearAllTimers();
+
+            const qBox = document.getElementById('botQuestionBox');
+            qBox.textContent = currentBotQuestion.question;
+            renderMath(qBox);
+
+            document.getElementById('botTimerStatusText').textContent = "Time's up";
+            document.getElementById('botPlayerBuzzBtn').disabled = true;
+
+            const fb = document.getElementById('botFeedback');
+            fb.classList.remove('hidden');
+            fb.className = "p-4 rounded-md text-xs sm:text-sm font-medium bg-slate-200 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-200";
+            fb.innerHTML = `<strong>Dead Toss-up (Time's up).</strong> Answer: <strong>${currentBotQuestion.answer}</strong>`;
+            renderMath(fb);
+
+            checkIfBotMatchEnded();
+        }
+
+        function playerBotBuzz() {
+            if (botQuestionLocked || !currentBotQuestion) return;
+
+            playerBuzzedEarlyInBotMode = !botIsReadingFinished;
+            clearAllTimers();
+
+            // Reveal the full question text on screen once player buzzes (matching Solo behavior)
+            const qBox = document.getElementById('botQuestionBox');
+            qBox.textContent = currentBotQuestion.question;
+            renderMath(qBox);
+
+            document.getElementById('botPlayerBuzzBtn').disabled = true;
+            document.getElementById('botAnswerInput').disabled = false;
+            document.getElementById('botMicBtn').disabled = false;
+            document.getElementById('botAnswerInput').placeholder = "Type your answer...";
+            document.getElementById('botSubmitBtn').disabled = false;
+            document.getElementById('botAnswerInput').focus();
+
+            if (currentBotQuestion.q_type.toLowerCase() !== 'bonus') {
+                startBotPlayerStallTimer();
+            }
+        }
+
+        function startBotPlayerStallTimer() {
+            if (document.getElementById('timerModeSelect').value !== 'timed') return;
+
+            const displayEl = document.getElementById('botTimerDisplay');
+            const statusTextEl = document.getElementById('botTimerStatusText');
+            let pauseLeft = 2.5;
+            displayEl.classList.remove('hidden');
+            statusTextEl.textContent = `Answer: ${pauseLeft.toFixed(1)}s`;
+
+            botPlayerStallInterval = setInterval(() => {
+                pauseLeft = Math.max(0, pauseLeft - 0.5);
+                if (pauseLeft > 0) {
+                    statusTextEl.textContent = `Answer: ${pauseLeft.toFixed(1)}s`;
+                } else {
+                    clearInterval(botPlayerStallInterval);
+                    botPlayerStallInterval = null;
+                }
+            }, 500);
+
+            botPlayerStallTimeout = setTimeout(() => {
+                clearAllTimers();
+                statusTextEl.textContent = "Stalled";
+                handleBotPlayerStall();
+            }, 2500);
+        }
+
+        function handleBotPlayerTyping() {
+            if (botPlayerStallTimeout) { clearTimeout(botPlayerStallTimeout); botPlayerStallTimeout = null; }
+            if (botPlayerStallInterval) { clearInterval(botPlayerStallInterval); botPlayerStallInterval = null; }
+
+            const displayEl = document.getElementById('botTimerDisplay');
+            const statusTextEl = document.getElementById('botTimerStatusText');
+            displayEl.classList.remove('hidden');
+            statusTextEl.textContent = "Typing...";
+
+            if (botPlayerTypingTimeout) clearTimeout(botPlayerTypingTimeout);
+            botPlayerTypingTimeout = setTimeout(() => {
+                startBotPlayerStallTimer();
+            }, 2500);
+        }
+
+        function handleBotPlayerStall() {
+            botQuestionLocked = true;
+            const penaltiesEnabled = document.getElementById('penaltiesSelect').value === 'yes';
+            const isBonus = currentBotQuestion.q_type.toLowerCase() === 'bonus';
+            const hadPenalty = Boolean(!isBonus && penaltiesEnabled && playerBuzzedEarlyInBotMode);
+
+            if (hadPenalty) {
+                botPlayerScore -= 4;
+                updateBotScoreboardUI();
+                triggerBotSpeech('onPlayerNeg');
+            }
+
+            document.getElementById('botAnswerInput').disabled = true;
+            document.getElementById('botMicBtn').disabled = true;
+            document.getElementById('botSubmitBtn').disabled = true;
+
+            const fb = document.getElementById('botFeedback');
+            fb.classList.remove('hidden');
+            fb.className = "p-4 rounded-md text-xs sm:text-sm font-medium bg-rose-50 dark:bg-rose-950/70 border border-rose-300 dark:border-rose-800 text-rose-800 dark:text-rose-200";
+            fb.innerHTML = `<strong>Stalled${hadPenalty ? ' (-4 penalty)' : ''}.</strong> Answer: <strong>${currentBotQuestion.answer}</strong>`;
+            renderMath(fb);
+
+            if (!isBonus) checkIfBotMatchEnded();
+        }
+
+        function submitBotPlayerAnswer() {
+            const ans = document.getElementById('botAnswerInput').value.trim();
+            if (!ans || !currentBotQuestion || botQuestionLocked) return;
+
+            clearAllTimers();
+            botQuestionLocked = true;
+            document.getElementById('botTimerDisplay').classList.add('hidden');
+            document.getElementById('botAnswerInput').disabled = true;
+            document.getElementById('botMicBtn').disabled = true;
+            document.getElementById('botSubmitBtn').disabled = true;
+
+            const gradeResult = gradeLocallyAndInstant(ans, currentBotQuestion);
+            const isBonus = currentBotQuestion.q_type.toLowerCase() === 'bonus';
+            const penaltiesEnabled = document.getElementById('penaltiesSelect').value === 'yes';
+            const fb = document.getElementById('botFeedback');
+            fb.classList.remove('hidden');
+
+            if (gradeResult.correct) {
+                const pts = isBonus ? 10 : 4;
+                botPlayerScore += pts;
+                updateBotScoreboardUI();
+
+                if (!isBonus) {
+                    triggerBotSpeech('onPlayerCorrect');
+                }
+
+                fb.className = "p-4 rounded-md text-xs sm:text-sm font-medium bg-emerald-50 dark:bg-emerald-950/70 border border-emerald-300 dark:border-emerald-800 text-emerald-800 dark:text-emerald-200";
+                fb.innerHTML = `<strong>Correct (+${pts})!</strong> Answer: <strong>${currentBotQuestion.answer}</strong>`;
+                renderMath(fb);
+
+                if (!isBonus) {
+                    const bonusBtn = document.getElementById('botBonusBtn');
+                    bonusBtn.textContent = "Bonus (+10) [B]";
+                    bonusBtn.classList.remove('hidden');
+                } else {
+                    checkIfBotMatchEnded();
+                }
+            } else {
+                const hadPenalty = Boolean(!isBonus && penaltiesEnabled && playerBuzzedEarlyInBotMode);
+                if (hadPenalty) {
+                    botPlayerScore -= 4;
+                    updateBotScoreboardUI();
+                    triggerBotSpeech('onPlayerNeg');
+                }
+
+                fb.className = "p-4 rounded-md text-xs sm:text-sm font-medium bg-rose-50 dark:bg-rose-950/70 border border-rose-300 dark:border-rose-800 text-rose-800 dark:text-rose-200";
+                fb.innerHTML = `<strong>Incorrect${hadPenalty ? ' (-4 penalty)' : ''}.</strong> Answer: <strong>${currentBotQuestion.answer}</strong>`;
+                renderMath(fb);
+
+                if (!isBonus) {
+                    checkIfBotMatchEnded();
+                }
+            }
+        }
+
+        async function loadBotModePlayerBonus() {
+            if (!currentBotQuestion || !selectedBot) return;
+            clearAllTimers();
+
+            const bonusBtn = document.getElementById('botBonusBtn');
+            const qBox = document.getElementById('botQuestionBox');
+            const fb = document.getElementById('botFeedback');
+            const matchedCategory = currentBotQuestion.category;
+            const matchedChunkId = currentBotQuestion.chunk_id || null;
+
+            bonusBtn.classList.add('hidden');
+            fb.classList.add('hidden');
+            fb.innerHTML = '';
+            qBox.innerHTML = `<span class="text-slate-500 dark:text-slate-400 font-normal">Loading your Bonus question...</span>`;
+
+            try {
+                const bonusQ = await fetchQuestionFromServer(matchedCategory, 'Bonus', matchedChunkId);
+                displayBotPlayerBonus(bonusQ);
+            } catch (err) {
+                displayBotPlayerBonus({
+                    category: matchedCategory,
+                    q_type: "Bonus",
+                    question: `What is a primary principle governing ${matchedCategory}?`,
+                    answer: "Refer to standard definition"
+                });
+            }
+        }
+
+        function displayBotPlayerBonus(bonusQ) {
+            currentBotQuestion = bonusQ;
+            botQuestionLocked = false;
+            playerBuzzedEarlyInBotMode = false;
+
+            document.getElementById('botQBadge').textContent = `${bonusQ.category} - Bonus (20s)`;
+            const qBox = document.getElementById('botQuestionBox');
+            qBox.textContent = bonusQ.question;
+            renderMath(qBox);
+
+            const isUntimed = document.getElementById('timerModeSelect').value === 'untimed';
+            document.getElementById('botPlayerBuzzBtn').disabled = true;
+            document.getElementById('botAnswerInput').value = '';
+            document.getElementById('botAnswerInput').disabled = false;
+            document.getElementById('botMicBtn').disabled = false;
+            document.getElementById('botAnswerInput').placeholder = isUntimed ? "Type bonus answer..." : "Type bonus answer (20s)...";
+            document.getElementById('botSubmitBtn').disabled = false;
+            document.getElementById('botAnswerInput').focus();
+
+            // 20-second bonus countdown
+            const displayEl = document.getElementById('botTimerDisplay');
+            const statusTextEl = document.getElementById('botTimerStatusText');
+
+            if (!isUntimed) {
+                let remaining = 20;
+                displayEl.classList.remove('hidden');
+                statusTextEl.textContent = `${remaining}s`;
+
+                countdownInterval = setInterval(() => {
+                    remaining--;
+                    if (remaining > 0) {
+                        statusTextEl.textContent = `${remaining}s`;
+                    } else {
+                        clearInterval(countdownInterval);
+                        countdownInterval = null;
+                        botQuestionLocked = true;
+                        statusTextEl.textContent = "Time's up";
+                        document.getElementById('botAnswerInput').disabled = true;
+                        document.getElementById('botMicBtn').disabled = true;
+                        document.getElementById('botSubmitBtn').disabled = true;
+
+                        const fb = document.getElementById('botFeedback');
+                        fb.classList.remove('hidden');
+                        fb.className = "p-4 rounded-md text-xs sm:text-sm font-medium bg-amber-50 dark:bg-amber-950/70 border border-amber-300 dark:border-amber-800 text-amber-800 dark:text-amber-200";
+                        fb.innerHTML = `<strong>Bonus Time's Up!</strong> Answer: <strong>${bonusQ.answer}</strong>`;
+                        renderMath(fb);
+                        checkIfBotMatchEnded();
+                    }
+                }, 1000);
+            } else {
+                displayEl.classList.add('hidden');
+            }
+        }
+
+        function checkIfBotMatchEnded() {
+            if (botRoundCurrent < botRoundTotal) return;
+
+            document.getElementById('botBonusBtn').classList.add('hidden');
+            const nextBtn = document.getElementById('botNextBtn');
+            nextBtn.textContent = "Rematch";
+            nextBtn.onclick = () => {
+                nextBtn.onclick = loadNextBotTossup;
+                startBotMatch(selectedBot.id);
+            };
+
+            const playerWon = botPlayerScore > botAiScore;
+            const tied = botPlayerScore === botAiScore;
+
+            if (playerWon) {
+                triggerBotSpeech('onMatchEndPlayerWins');
+            } else {
+                triggerBotSpeech('onMatchEndBotWins');
+            }
+
+            saveMatchToHistory({
+                contest_id: `Vs. ${selectedBot.name}`,
+                division: selectedDivision,
+                difficulty: selectedDifficulty,
+                teams: {
+                    "You": botPlayerScore,
+                    [selectedBot.name]: botAiScore
+                }
+            });
+
+            const fb = document.getElementById('botFeedback');
+            const resultHeadline = playerWon
+                ? `Victory! You defeated ${selectedBot.name} (${botPlayerScore} to ${botAiScore})!`
+                : (tied
+                    ? `Tie Match! You and ${selectedBot.name} finished deadlocked at ${botPlayerScore} pts!`
+                    : `Defeat! ${selectedBot.name} won the match (${botAiScore} to ${botPlayerScore}).`);
+
+            fb.innerHTML += `<div class="mt-3 pt-2.5 border-t border-current/20 font-extrabold text-sm">${resultHeadline}</div>`;
+        }
+
+        /* =========================================================================
+           MULTIPLAYER CONTEST / MATCH ROOM
+           ========================================================================= */
+        let myContestId = null;
+        let myTeamName = null;
+        let myPlayerName = null;
+        let isRoomCreator = false;
+        let pollInterval = null;
+        let isPolling = false;
+        let lastRenderedQuestion = "";
+        let lastContestStatus = "";
+
+        async function createContest() {
+            const team = document.getElementById('createTeamName').value.trim() || "Team A";
+            const player = document.getElementById('createPlayerName').value.trim() || "Player";
+            try {
+                const res = await safeFetchJSON('/contest/create', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        team_name: team,
+                        player_name: player,
+                        settings: getCurrentSettingsFromUI()
+                    })
+                });
+                isRoomCreator = true;
+                enterContestRoom(res.contest_id, res.password, team, res.player_name, res.state);
+            } catch (err) { alert(err.message); }
+        }
+
+        async function joinContest() {
+            const cid = document.getElementById('joinContestId').value.trim().toUpperCase();
+            const pwd = document.getElementById('joinPassword').value.trim();
+            const team = document.getElementById('joinTeamName').value.trim();
+            const player = document.getElementById('joinPlayerName').value.trim();
+            if (!cid || !pwd || !team) return alert("Fill required fields.");
+
+            try {
+                const res = await safeFetchJSON('/contest/join', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contest_id: cid,
+                        password: pwd,
+                        team_name: team,
+                        player_name: player
+                    })
+                });
+                isRoomCreator = (res.state.creator === team);
+                enterContestRoom(res.contest_id, pwd, team, res.player_name, res.state);
+            } catch (err) { alert(err.message); }
+        }
+
+        function enterContestRoom(cid, pwd, team, player, initialState) {
+            myContestId = cid;
+            myTeamName = team;
+            myPlayerName = player;
+            recordScreen('contest_room');
+            document.getElementById('contestLobby').classList.add('hidden');
+            document.getElementById('contestRoom').classList.remove('hidden');
+            document.getElementById('displayContestId').textContent = cid;
+            document.getElementById('displayPassword').textContent = pwd;
+            document.getElementById('displayMyPlayerInfo').textContent = `${player} (${team})`;
+
+            updateContestUI(initialState);
+            if (pollInterval) clearInterval(pollInterval);
+            pollInterval = setInterval(pollContestState, 400);
+        }
+
+        function cleanupContestLocalState() {
+            clearAllTimers();
+            if (pollInterval) { clearInterval(pollInterval); pollInterval = null; }
+            myContestId = null;
+            myTeamName = null;
+            myPlayerName = null;
+            isRoomCreator = false;
+            lastRenderedQuestion = "";
+            lastContestStatus = "";
+            lastContestState = null;
+
+            document.getElementById('contestRoom').classList.add('hidden');
+            document.getElementById('contestLobby').classList.remove('hidden');
+            document.getElementById('contestTimerDisplay').classList.add('hidden');
+            document.getElementById('teamsList').innerHTML = '';
+            setSettingsInputsDisabled(false);
+            document.getElementById('settingsLockBadge').classList.add('hidden');
+        }
+
+        async function leaveContestMatch() {
+            const cidToLeave = myContestId;
+            const teamToLeave = myTeamName;
+            const playerToLeave = myPlayerName;
+
+            cleanupContestLocalState();
+
+            if (cidToLeave && teamToLeave) {
+                try {
+                    await safeFetchJSON('/contest/leave', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            contest_id: cidToLeave,
+                            team_name: teamToLeave,
+                            player_name: playerToLeave
+                        })
+                    });
+                } catch (e) { console.error(e); }
+            }
+
+            openHomeScreen(true);
+        }
+
+        async function pollContestState() {
+            if (!myContestId || isPolling) return;
+            isPolling = true;
+            try {
+                const state = await safeFetchJSON(`/contest/state/${myContestId}`);
+                updateContestUI(state);
+            } catch (e) {
+                console.error(e);
+            } finally {
+                isPolling = false;
+            }
+        }
+
+        async function handleContestTimeout(reason) {
+            if (!myContestId) return;
+            try {
+                const state = await safeFetchJSON('/contest/timeout', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ contest_id: myContestId, reason: reason })
+                });
+                updateContestUI(state);
+            } catch (e) { console.error(e); }
+        }
+
+        async function revealContestAnswer() {
+            if (!myContestId) return;
+            try {
+                const state = await safeFetchJSON('/contest/reveal', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ contest_id: myContestId })
+                });
+                updateContestUI(state);
+            } catch (e) { console.error(e); }
+        }
+
+        function updateContestUI(state) {
+            lastContestState = state;
+            if (state.status === 'completed' && state.teams) {
+                saveMatchToHistory({ contest_id: myContestId, division: selectedDivision, difficulty: selectedDifficulty, teams: state.teams });
+            }
+
+            if (state.settings) {
+                selectedDivision = state.settings.division || "High School";
+                selectedDifficulty = state.settings.difficulty || "Intermediate";
+                updateActiveLevelBadge();
+
+                document.getElementById('categorySelect').value = state.settings.category || "All Topics";
+                document.getElementById('typeSelect').value = state.settings.practice_format || "Combined";
+                document.getElementById('sourceSelect').value = state.settings.source_mode || "hybrid";
+                document.getElementById('timerModeSelect').value = state.settings.timing_mode || "timed";
+                document.getElementById('penaltiesSelect').value = state.settings.penalties || "yes";
+
+                const amCreatorTeam = (state.creator === myTeamName);
+                isRoomCreator = amCreatorTeam;
+                setSettingsInputsDisabled(!amCreatorTeam);
+                document.getElementById('settingsLockBadge').classList.toggle('hidden', amCreatorTeam);
+            }
+
+            const teamsList = document.getElementById('teamsList');
+            teamsList.innerHTML = '';
+            const sortedTeams = Object.entries(state.teams).sort((a, b) => b[1] - a[1]);
+            const readyList = state.ready_teams || [];
+            const membersMap = state.team_members || {};
+
+            for (const [tName, score] of sortedTeams) {
+                const isMyTeam = tName === myTeamName;
+                const isBuzzed = state.buzzed_team === tName;
+                const isWrong = (state.wrong_teams || []).includes(tName);
+                const isReady = readyList.includes(tName);
+                const roster = membersMap[tName] || [];
+                const rosterBadges = roster.map(p => {
+                    const isActiveBuzzer = isBuzzed && state.buzzed_player === p;
+                    const isSelf = isMyTeam && p === myPlayerName;
+                    return `<span class="inline-block text-[10px] font-semibold px-2 py-0.5 rounded mr-1 mt-1 ${isActiveBuzzer ? 'bg-indigo-100 dark:bg-indigo-900 text-indigo-800 dark:text-indigo-200 font-bold' : 'bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300'}">${p}${isSelf ? ' (You)' : ''}${isActiveBuzzer ? ' [BUZZED]' : ''}</span>`;
+                }).join('');
+
+                teamsList.innerHTML += `
+                    <div class="p-3 rounded-md border ${isBuzzed ? 'bg-indigo-50 dark:bg-indigo-950/60 border-indigo-300 dark:border-indigo-700' : 'bg-slate-50 dark:bg-slate-950 border-slate-300 dark:border-slate-800'}">
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs font-bold ${isMyTeam ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-800 dark:text-slate-200'}">
+                                ${tName} ${isMyTeam ? '(You)' : ''} ${isBuzzed ? '[BUZZED]' : ''} ${isWrong ? '[WRONG]' : ''} ${isReady ? '[READY]' : ''}
+                            </span>
+                            <span class="text-base font-extrabold font-mono text-emerald-600 dark:text-emerald-400">${score}</span>
+                        </div>
+                        <div class="mt-1.5 flex flex-wrap">${rosterBadges}</div>
+                    </div>
+                `;
+            }
+
+            document.getElementById('contestStatusBanner').textContent = state.last_result;
+
+            const nextBtn = document.getElementById('contestNextBtn');
+            const format = state.settings ? state.settings.practice_format : 'Combined';
+            const baseLabel = format === 'Bonus' ? 'Next Bonus' : 'Next Toss-up';
+
+            if (readyList.includes(myTeamName)) {
+                nextBtn.disabled = true;
+                nextBtn.textContent = "Waiting...";
+            } else {
+                nextBtn.disabled = false;
+                nextBtn.textContent = baseLabel;
+            }
+
+            const bonusBtn = document.getElementById('contestBonusBtn');
+            if (state.bonus_team) {
+                bonusBtn.classList.remove('hidden');
+                bonusBtn.textContent = `Bonus (+10) [B]`;
+            } else {
+                bonusBtn.classList.add('hidden');
+            }
+
+            const isUntimed = state.settings && state.settings.timing_mode === 'untimed';
+            const revealBtn = document.getElementById('contestRevealBtn');
+            if (isUntimed && state.question && state.status !== 'answered') {
+                revealBtn.classList.remove('hidden');
+            } else {
+                revealBtn.classList.add('hidden');
+            }
+
+            if (state.question && state.question.question !== lastRenderedQuestion) {
+                lastRenderedQuestion = state.question.question;
+                const qBox = document.getElementById('contestQuestionBox');
+                qBox.innerHTML = `<div class="text-xs font-bold text-indigo-600 dark:text-indigo-400 uppercase mb-2 tracking-wide">${state.question.category} - ${state.question.q_type}</div>` + state.question.question;
+                renderMath(qBox);
+                document.getElementById('contestAnswerInput').value = '';
+                startQuestionFlow(state.question.question, state.question.q_type, true);
+            }
+
+            if (state.status === 'buzzed' && lastContestStatus !== 'buzzed') {
+                if (state.buzzed_team !== myTeamName) {
+                    clearAllTimers();
+                    document.getElementById('contestTimerDisplay').classList.add('hidden');
+                }
+            }
+            if (state.status === 'active' && lastContestStatus === 'buzzed' && state.question) {
+                startQuestionFlow(state.question.question, state.question.q_type, true);
+            }
+            lastContestStatus = state.status;
+
+            if (state.status === 'answered') {
+                clearAllTimers();
+                document.getElementById('contestTimerDisplay').classList.add('hidden');
+            }
+
+            const buzzBtn = document.getElementById('contestBuzzBtn');
+            const ansInput = document.getElementById('contestAnswerInput');
+            const micBtn = document.getElementById('contestMicBtn');
+            const subBtn = document.getElementById('contestSubmitBtn');
+
+            const hasAlreadyGuessedWrong = (state.wrong_teams || []).includes(myTeamName);
+            const canBuzz = (state.status === 'active' && !state.buzzed_team && !hasAlreadyGuessedWrong);
+            const isBonusQuestion = state.question && state.question.q_type && state.question.q_type.toLowerCase() === 'bonus';
+            const myTurnToAnswer = (
+                state.status === 'buzzed' &&
+                state.buzzed_team === myTeamName &&
+                (isBonusQuestion || !state.buzzed_player || state.buzzed_player === myPlayerName)
+            );
+
+            if (!document.activeElement || document.activeElement !== ansInput) {
+                buzzBtn.disabled = !canBuzz;
+                ansInput.disabled = !myTurnToAnswer;
+                micBtn.disabled = !myTurnToAnswer;
+                subBtn.disabled = !myTurnToAnswer;
+                ansInput.placeholder = myTurnToAnswer ? "Type your answer..." : "Buzz first...";
+            }
+        }
+
+        async function pushContestQuestion(qType) {
+            if (!myContestId) return;
+            const nextBtn = document.getElementById('contestNextBtn');
+            nextBtn.disabled = true;
+            nextBtn.textContent = "Waiting...";
+
+            try {
+                const state = await safeFetchJSON('/contest/next', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contest_id: myContestId,
+                        team_name: myTeamName,
+                        q_type: qType
+                    })
+                });
+                updateContestUI(state);
+            } catch (err) {
+                nextBtn.disabled = false;
+                alert("Error: " + err.message);
+            }
+        }
+
+        async function contestBuzz() {
+            if (!myContestId || !myTeamName) return;
+            const isEarly = !isQuestionFinishedReading;
+            clearAllTimers();
+
+            document.getElementById('contestBuzzBtn').disabled = true;
+            document.getElementById('contestAnswerInput').disabled = false;
+            document.getElementById('contestMicBtn').disabled = false;
+            document.getElementById('contestAnswerInput').placeholder = "Type your answer...";
+            document.getElementById('contestSubmitBtn').disabled = false;
+            document.getElementById('contestAnswerInput').focus();
+            document.getElementById('contestStatusBanner').textContent = `${myPlayerName} buzzed in.`;
+
+            if (lastRenderedQuestion && !lastRenderedQuestion.includes("Bonus")) {
+                startPostBuzzNaturalPause(true);
+            }
+
+            try {
+                const state = await safeFetchJSON('/contest/buzz', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contest_id: myContestId,
+                        team_name: myTeamName,
+                        player_name: myPlayerName,
+                        is_early: isEarly
+                    })
+                });
+                updateContestUI(state);
+            } catch (err) { console.error(err); }
+        }
+
+        async function submitContestAnswer() {
+            const ans = document.getElementById('contestAnswerInput').value.trim();
+            if (!ans || !myContestId) return;
+
+            clearAllTimers();
+            document.getElementById('contestTimerDisplay').classList.add('hidden');
+            document.getElementById('contestMicBtn').disabled = true;
+            document.getElementById('contestSubmitBtn').disabled = true;
+            try {
+                const state = await safeFetchJSON('/contest/answer', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contest_id: myContestId,
+                        team_name: myTeamName,
+                        player_name: myPlayerName,
+                        user_answer: ans
+                    })
+                });
+                updateContestUI(state);
+            } catch (err) { alert("Error: " + err.message); }
+        }
+
+        // Initialize prefetch buffer
+        refillClientBuffer();
+    </script>
+</body>
+</html>
