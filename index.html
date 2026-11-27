@@ -56,9 +56,9 @@
                 <button onclick="signInWithPhone()" class="w-full flex items-center justify-center bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 border border-slate-300 dark:border-slate-700 font-semibold py-2.5 rounded-md text-xs transition-colors">
                     Continue with Phone Number
                 </button>
-                    <a href="https://github.com/adiaru1/science-bowl-trainer" target="_blank" class="w-full flex items-center justify-center gap-2 bg-slate-900 hover:bg-slate-800 dark:bg-slate-800 dark:hover:bg-slate-700 text-white font-semibold py-2.5 rounded-md text-xs transition-colors border border-slate-700">
-                        View Github Repository
+                <a href="https://github.com/YOUR_GITHUB_USERNAME/YOUR_REPO_NAME" target="_blank" class="w-full flex items-center justify-center gap-2 bg-slate-900 hover:bg-slate-800 dark:bg-slate-800 dark:hover:bg-slate-700 text-white font-semibold py-2.5 rounded-md text-xs transition-colors border border-slate-700">
                     <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+                    Star on GitHub
                 </a>
             </div>
 
@@ -156,6 +156,10 @@
             <button onclick="openLeaderboardModal()" class="px-3 py-1.5 rounded-md text-xs font-semibold bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 border border-slate-300 dark:border-slate-700 transition-colors">
                 Match Log
             </button>
+            <a href="https://github.com/YOUR_GITHUB_USERNAME/YOUR_REPO_NAME" target="_blank" class="px-3 py-1.5 rounded-md text-xs font-semibold bg-slate-900 hover:bg-slate-800 text-white border border-slate-700 transition-colors flex items-center gap-1.5">
+                <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+                Star GitHub
+            </a>
             <label class="flex items-center gap-2 text-xs font-semibold cursor-pointer bg-slate-200 dark:bg-slate-800 px-3 py-1.5 rounded-md border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-200">
                 <input type="checkbox" id="ttsToggle" class="rounded text-indigo-600 dark:text-indigo-500 focus:ring-indigo-400 w-3.5 h-3.5">
                 Read Aloud
@@ -170,7 +174,7 @@
         </div>
     </nav>
 
-    <!-- Modals (Auth, Instructions, Session Review, Starred, Leaderboard) -->
+    <!-- Modals -->
     <div id="authModal" class="fixed inset-0 bg-slate-950/75 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
         <div class="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 rounded-lg max-w-md w-full p-7 space-y-5 shadow-2xl">
             <div class="flex justify-between items-center border-b border-slate-200 dark:border-slate-800 pb-3">
@@ -221,8 +225,8 @@
             </div>
             <ul class="list-disc list-inside space-y-2.5 text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
                 <li><strong>Voice Answer:</strong> Press <code class="bg-slate-200 dark:bg-slate-800 px-1.5 py-0.5 rounded font-mono text-xs">V</code> after buzzing.</li>
-                <li><strong>Play vs. Bot:</strong> Race seasonal AI opponents on the buzzer. Watch out for early negs (-4) or rapid steals!</li>
-                <li><strong>Starred Cards:</strong> Click <strong>Star</strong> to save questions to your review deck.</li>
+                <li><strong>Play vs. Bot:</strong> Race seasonal AI opponents. Bot early negs restart the question timer and reader!</li>
+                <li><strong>AI Coach:</strong> Check your sidebar for live training advice and difficulty recommendations.</li>
                 <li><strong>Shortcuts:</strong> <code class="bg-slate-200 dark:bg-slate-800 px-1.5 py-0.5 rounded font-mono text-xs">Space</code> to buzz, <code class="bg-slate-200 dark:bg-slate-800 px-1.5 py-0.5 rounded font-mono text-xs">V</code> to speak, <code class="bg-slate-200 dark:bg-slate-800 px-1.5 py-0.5 rounded font-mono text-xs">B</code> for bonus, <code class="bg-slate-200 dark:bg-slate-800 px-1.5 py-0.5 rounded font-mono text-xs">N</code> for next.</li>
             </ul>
             <div class="flex justify-end pt-2">
@@ -283,11 +287,9 @@
                 <div class="text-xs text-slate-700 dark:text-slate-300">
                     <strong class="text-slate-900 dark:text-white font-bold">PDF Upload:</strong> Add custom packets
                 </div>
-            <form id="uploadForm" class="flex items-center gap-2">
-                <input type="file" id="pdfFiles" multiple accept=".pdf" class="text-xs text-slate-600 dark:text-slate-400 file:mr-2 file:py-1.5 file:px-3 file:rounded-md file:border file:border-slate-300 dark:file:border-slate-700 file:bg-slate-100 dark:file:bg-slate-800 file:text-slate-800 dark:file:text-slate-200 hover:file:bg-slate-200 cursor-pointer font-semibold"/>
-                <button type="submit" id="uploadSubmitBtn" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-3.5 py-2 rounded-md transition-colors">Upload</button>
-            </form>
-                    
+                <form id="uploadForm" class="flex items-center gap-2">
+                    <input type="file" id="pdfFiles" multiple accept=".pdf" class="text-xs text-slate-600 dark:text-slate-400 file:mr-2 file:py-1.5 file:px-3 file:rounded-md file:border file:border-slate-300 dark:file:border-slate-700 file:bg-slate-100 dark:file:bg-slate-800 file:text-slate-800 dark:file:text-slate-200 hover:file:bg-slate-200 cursor-pointer font-semibold"/>
+                    <button type="submit" id="uploadSubmitBtn" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-3.5 py-2 rounded-md transition-colors">Upload</button>
                 </form>
             </div>
 
@@ -372,6 +374,12 @@
                     </div>
                 </div>
 
+                <!-- Source Packet Badge Bar -->
+                <div id="soloSourceBar" class="hidden text-xs font-semibold text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-950 px-3.5 py-1.5 rounded-md border border-slate-200 dark:border-slate-800 flex items-center gap-2">
+                    <span class="font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider text-[10px]">Source:</span>
+                    <span id="soloSourceText">National Science Bowl Packet</span>
+                </div>
+
                 <div id="soloQuestionBox" class="min-h-[160px] text-base sm:text-lg leading-relaxed text-slate-900 dark:text-slate-100 whitespace-pre-wrap font-medium p-5 rounded-md bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
                     Press <code class="bg-slate-200 dark:bg-slate-800 px-1.5 py-0.5 rounded font-mono text-sm text-slate-800 dark:text-slate-200">N</code> or click <strong>Next</strong> to start.
                 </div>
@@ -418,7 +426,7 @@
                     </div>
 
                     <div id="botCharacterGrid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <!-- Rendered dynamically by renderBotSelectionCards() -->
+                        <!-- Rendered dynamically -->
                     </div>
                 </div>
 
@@ -465,7 +473,7 @@
                                 Bot buzzed!
                             </span>
                             <span id="botNegBadge" class="hidden text-xs font-extrabold uppercase tracking-wider px-3 py-1 rounded bg-rose-100 dark:bg-rose-950 text-rose-700 dark:text-rose-300 border border-rose-300 dark:border-rose-700">
-                                NEG! (-4)
+                                NEG! (-4) — Restarting Question...
                             </span>
                         </div>
                         <div class="flex gap-2 flex-wrap">
@@ -479,6 +487,12 @@
                                 Next (N)
                             </button>
                         </div>
+                    </div>
+
+                    <!-- Source Packet Badge Bar -->
+                    <div id="botSourceBar" class="hidden text-xs font-semibold text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-950 px-3.5 py-1.5 rounded-md border border-slate-200 dark:border-slate-800 flex items-center gap-2">
+                        <span class="font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider text-[10px]">Source:</span>
+                        <span id="botSourceText">National Science Bowl Packet</span>
                     </div>
 
                     <!-- Progressive Question Reader Box -->
@@ -589,61 +603,79 @@
             </div>
         </div>
 
-        <!-- SCOREBOARD SIDEBAR -->
-        <div class="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 rounded-lg p-5 h-fit space-y-4">
-            <h2 class="text-xs font-bold text-slate-700 dark:text-slate-300 border-b border-slate-200 dark:border-slate-800 pb-3 flex items-center justify-between uppercase tracking-wider">
-                <span>Scoreboard</span>
-                <span id="modeIndicator" class="text-[10px] bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 px-2 py-0.5 rounded font-bold border border-indigo-300 dark:border-indigo-800">Solo</span>
-            </h2>
+        <!-- SCOREBOARD & AI COACH SIDEBAR -->
+        <div class="space-y-5">
+            <!-- Scoreboard Panel -->
+            <div class="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 rounded-lg p-5 space-y-4">
+                <h2 class="text-xs font-bold text-slate-700 dark:text-slate-300 border-b border-slate-200 dark:border-slate-800 pb-3 flex items-center justify-between uppercase tracking-wider">
+                    <span>Scoreboard</span>
+                    <span id="modeIndicator" class="text-[10px] bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 px-2 py-0.5 rounded font-bold border border-indigo-300 dark:border-indigo-800">Solo</span>
+                </h2>
 
-            <!-- Solo Score Panel -->
-            <div id="soloScorePanel" class="space-y-2.5">
-                <div class="flex justify-between items-center bg-slate-50 dark:bg-slate-950 p-3.5 rounded-md border border-slate-200 dark:border-slate-800">
-                    <span class="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wide">Points</span>
-                    <span id="soloScoreVal" class="text-2xl font-extrabold font-mono text-emerald-600 dark:text-emerald-400">0</span>
-                </div>
-                <p class="text-[11px] text-slate-600 dark:text-slate-400 leading-relaxed">Toss-up: +4 | Bonus: +10 | Penalty: -4</p>
-            </div>
-
-            <!-- Bot Score Panel (Live 1v1 Scoreboard) -->
-            <div id="botScorePanel" class="hidden space-y-3">
-                <div class="p-3.5 rounded-md bg-indigo-50 dark:bg-indigo-950/50 border border-indigo-300 dark:border-indigo-800 flex justify-between items-center">
-                    <div>
-                        <div class="text-xs font-extrabold text-indigo-700 dark:text-indigo-300">You</div>
-                        <div class="text-[10px] text-slate-500 dark:text-slate-400 font-semibold">Challenger</div>
+                <!-- Solo Score Panel -->
+                <div id="soloScorePanel" class="space-y-2.5">
+                    <div class="flex justify-between items-center bg-slate-50 dark:bg-slate-950 p-3.5 rounded-md border border-slate-200 dark:border-slate-800">
+                        <span class="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wide">Points</span>
+                        <span id="soloScoreVal" class="text-2xl font-extrabold font-mono text-emerald-600 dark:text-emerald-400">0</span>
                     </div>
-                    <span id="botModePlayerScoreVal" class="text-2xl font-extrabold font-mono text-emerald-600 dark:text-emerald-400">0</span>
+                    <p class="text-[11px] text-slate-600 dark:text-slate-400 leading-relaxed">Toss-up: +4 | Bonus: +10 | Penalty: -4</p>
                 </div>
 
-                <div class="text-center text-[10px] font-extrabold uppercase tracking-widest text-slate-400">VS</div>
+                <!-- Bot Score Panel -->
+                <div id="botScorePanel" class="hidden space-y-3">
+                    <div class="p-3.5 rounded-md bg-indigo-50 dark:bg-indigo-950/50 border border-indigo-300 dark:border-indigo-800 flex justify-between items-center">
+                        <div>
+                            <div class="text-xs font-extrabold text-indigo-700 dark:text-indigo-300">You</div>
+                            <div class="text-[10px] text-slate-500 dark:text-slate-400 font-semibold">Challenger</div>
+                        </div>
+                        <span id="botModePlayerScoreVal" class="text-2xl font-extrabold font-mono text-emerald-600 dark:text-emerald-400">0</span>
+                    </div>
 
-                <div class="p-3.5 rounded-md bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 flex justify-between items-center">
-                    <div class="flex items-center gap-2.5 min-w-0">
-                        <img id="sidebarBotAvatar" src="" alt="Bot" class="w-9 h-9 rounded-md object-cover bg-slate-200 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 shrink-0"/>
-                        <div class="truncate">
-                            <div id="sidebarBotName" class="text-xs font-extrabold text-slate-900 dark:text-slate-100 truncate">Select Bot</div>
-                            <div id="sidebarBotRating" class="text-[10px] text-slate-500 font-mono">---</div>
+                    <div class="text-center text-[10px] font-extrabold uppercase tracking-widest text-slate-400">VS</div>
+
+                    <div class="p-3.5 rounded-md bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 flex justify-between items-center">
+                        <div class="flex items-center gap-2.5 min-w-0">
+                            <img id="sidebarBotAvatar" src="" alt="Bot" class="w-9 h-9 rounded-md object-cover bg-slate-200 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 shrink-0"/>
+                            <div class="truncate">
+                                <div id="sidebarBotName" class="text-xs font-extrabold text-slate-900 dark:text-slate-100 truncate">Select Bot</div>
+                                <div id="sidebarBotRating" class="text-[10px] text-slate-500 font-mono">---</div>
+                            </div>
+                        </div>
+                        <span id="botModeBotScoreVal" class="text-2xl font-extrabold font-mono text-rose-600 dark:text-rose-400">0</span>
+                    </div>
+
+                    <div id="botMatchProgressBox" class="hidden pt-1 space-y-1.5">
+                        <div class="flex justify-between text-[11px] font-semibold text-slate-600 dark:text-slate-400">
+                            <span>Progress</span>
+                            <span id="botSidebarRoundText" class="font-mono">0 / 10</span>
+                        </div>
+                        <div class="w-full h-2 bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">
+                            <div id="botSidebarProgressBar" class="h-full bg-indigo-600 transition-all duration-300" style="width: 0%"></div>
                         </div>
                     </div>
-                    <span id="botModeBotScoreVal" class="text-2xl font-extrabold font-mono text-rose-600 dark:text-rose-400">0</span>
                 </div>
 
-                <div id="botMatchProgressBox" class="hidden pt-1 space-y-1.5">
-                    <div class="flex justify-between text-[11px] font-semibold text-slate-600 dark:text-slate-400">
-                        <span>Progress</span>
-                        <span id="botSidebarRoundText" class="font-mono">0 / 10</span>
-                    </div>
-                    <div class="w-full h-2 bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">
-                        <div id="botSidebarProgressBar" class="h-full bg-indigo-600 transition-all duration-300" style="width: 0%"></div>
-                    </div>
+                <!-- Contest Score Panel -->
+                <div id="contestScorePanel" class="hidden space-y-2.5">
+                    <div id="teamsList" class="space-y-2"></div>
                 </div>
-                <p class="text-[11px] text-slate-600 dark:text-slate-400 leading-relaxed pt-1">Toss-up: +4 | Bonus: +10 | Early Interrupt: -4</p>
             </div>
 
-            <!-- Contest Score Panel -->
-            <div id="contestScorePanel" class="hidden space-y-2.5">
-                <div id="teamsList" class="space-y-2"></div>
-                <p class="text-[11px] text-slate-600 dark:text-slate-400 pt-1">First buzz locks out others.</p>
+            <!-- AI COACH BOT PANEL -->
+            <div class="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 rounded-lg p-5 space-y-3">
+                <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
+                    <div class="flex items-center gap-2">
+                        <div class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></div>
+                        <h2 class="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">Coach AI</h2>
+                    </div>
+                    <span id="coachBadge" class="text-[10px] font-bold px-2 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 border border-indigo-300 dark:border-indigo-800">Ready</span>
+                </div>
+                <div id="coachAdviceBox" class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed min-h-[70px]">
+                    "Welcome! Complete a few questions or a bot match and I'll analyze your performance, spot your weak categories, and suggest difficulty adjustments."
+                </div>
+                <button onclick="refreshCoachAdvice()" class="w-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 font-semibold py-2 rounded-md text-xs transition-colors border border-slate-300 dark:border-slate-700">
+                    Get AI Coaching Tip
+                </button>
             </div>
         </div>
     </div>
@@ -782,7 +814,7 @@
                 accuracy: 0.78,
                 accuracyLabel: '78% Accuracy',
                 badgeColor: 'text-indigo-600 dark:text-indigo-400',
-                avatar: '/static/images/santa.png',
+                avatar: '/static/images/santa.jpg',
                 fallbackInitials: 'SC',
                 fallbackBg: '#1e3a8a',
                 bio: 'Centuries of global logistics, thermodynamics, and orbital mechanics make him a formidable Regional captain.',
@@ -843,7 +875,7 @@
                 accuracy: 0.92,
                 accuracyLabel: '92% Accuracy',
                 badgeColor: 'text-rose-600 dark:text-rose-400',
-                avatar: '/static/images/grinch.jpg',
+                avatar: '/static/images/grinch.png',
                 fallbackInitials: 'GR',
                 fallbackBg: '#14532d',
                 bio: 'Four-time Mount Crumpit Champion. Feeds on stolen toss-ups, bonus sweeps, and crushed dreams.',
@@ -899,7 +931,6 @@
             }
         };
 
-        /* Helper to generate inline SVG fallback if local image is missing */
         function getFallbackAvatarDataUri(bot) {
             const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
                 <rect width="128" height="128" fill="${bot.fallbackBg}"/>
@@ -915,7 +946,7 @@
         let selectedDifficulty = "Intermediate";
         let currentUser = null;
 
-        const firebaseConfig = {
+       const firebaseConfig = {
             apiKey: "AIzaSyA_i9Mv3acNkwJyBKfG1wYrA54n9Ek_-p4",
             authDomain: "sciencebowltrainer.firebaseapp.com",
             projectId: "sciencebowltrainer",
@@ -1036,6 +1067,40 @@
         auth.onAuthStateChanged(user => {
             if (user) applyUserData(user);
         });
+
+        /* =========================================================================
+           AI COACH BOT ENGINE
+           ========================================================================= */
+        function refreshCoachAdvice() {
+            const adviceBox = document.getElementById('coachAdviceBox');
+            const badge = document.getElementById('coachBadge');
+            
+            const totalAns = soloSessionStats.correct + soloSessionStats.incorrect;
+            if (totalAns === 0 && botRoundCurrent === 0) {
+                adviceBox.textContent = `"You haven't answered any questions yet! Start a Solo round or challenge a Winter Bot so I can evaluate your accuracy and speed."`;
+                badge.textContent = "Standby";
+                return;
+            }
+
+            const accuracy = totalAns > 0 ? Math.round((soloSessionStats.correct / totalAns) * 100) : 70;
+            let advice = "";
+
+            if (accuracy >= 80) {
+                badge.textContent = "Elite Level";
+                badge.className = "text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-50 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800";
+                advice = `"Outstanding precision (${accuracy}% accuracy)! You're playing at a Nationals level. Try switching your difficulty to **Expert** or challenge **The Grinch** to test your early-interrupt buzzer speed."`;
+            } else if (accuracy >= 55) {
+                badge.textContent = "Steady Progress";
+                badge.className = "text-[10px] font-bold px-2 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 border border-indigo-300 dark:border-indigo-800";
+                advice = `"Solid work! Your accuracy is resting at ${accuracy}%. Make sure to star tricky questions into your Starred deck. Consider challenging **Santa Claus** to hone your late-toss-up discipline."`;
+            } else {
+                badge.textContent = "Focus Mode";
+                badge.className = "text-[10px] font-bold px-2 py-0.5 rounded bg-amber-50 dark:bg-amber-950 text-amber-700 dark:text-amber-300 border border-amber-300 dark:border-amber-800";
+                advice = `"Your accuracy is around ${accuracy}%. Try switching your difficulty to **Beginner** or **Intermediate**, and practice with **Rudolph** to build confidence without taking heavy penalties on early interrupts."`;
+            }
+
+            adviceBox.textContent = advice;
+        }
 
         /* =========================================================================
            VOICE RECOGNITION
@@ -1379,6 +1444,7 @@
                 points: pointsChange,
                 time: responseTimeSec !== null ? `${responseTimeSec.toFixed(1)}s` : "-"
             });
+            refreshCoachAdvice();
         }
 
         function openSoloSessionReview() {
@@ -1727,7 +1793,7 @@
         }
 
         /* =========================================================================
-           KEYBOARD SHORTCUTS (Solo, Play vs Bot, Contest)
+           KEYBOARD SHORTCUTS
            ========================================================================= */
         document.addEventListener('keydown', (e) => {
             if (!document.getElementById('welcomeGateModal').classList.contains('hidden')) return;
@@ -1817,7 +1883,7 @@
         }
 
         /* =========================================================================
-           MODE SWITCHING (SOLO, PLAY VS. BOT, MATCH ROOM)
+           MODE SWITCHING
            ========================================================================= */
         let activeTab = 'solo';
 
@@ -1866,52 +1932,49 @@
         }
 
         /* =========================================================================
-           PDF UPLOAD & PREFETCH BUFFER
+           PDF UPLOAD, ANTI-REPETITION & SOURCE PACKET BUFFER
            ========================================================================= */
-           document.getElementById('uploadForm').addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const files = document.getElementById('pdfFiles').files;
-                if (!files.length) return alert("Select PDF first.");
-                
-                const submitBtn = document.getElementById('uploadSubmitBtn');
-                
-                // 1. Change button text and disable it during upload
-                const originalText = submitBtn.textContent;
-                submitBtn.disabled = true;
-                submitBtn.textContent = "Uploading...";
-                submitBtn.classList.add('opacity-50', 'cursor-not-allowed');
+        document.getElementById('uploadForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const files = document.getElementById('pdfFiles').files;
+            if (!files.length) return alert("Select PDF first.");
             
-                const formData = new FormData();
-                for (let f of files) formData.append('file', f);
-            
-                try {
-                    const res = await safeFetchJSON('/upload', { method: 'POST', body: formData });
-                    alert(res.message);
-                    // Clear the file input after successful upload
-                    document.getElementById('pdfFiles').value = '';
-                } catch (err) { 
-                    alert("Error: " + err.message); 
-                } finally {
-                    // 2. Restore button back to normal state whether success or error
-                    submitBtn.disabled = false;
-                    submitBtn.textContent = originalText;
-                    submitBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-                }
+            const submitBtn = document.getElementById('uploadSubmitBtn');
+            const originalText = submitBtn.textContent;
+            submitBtn.disabled = true;
+            submitBtn.textContent = "Uploading...";
+            submitBtn.classList.add('opacity-50', 'cursor-not-allowed');
+
+            const formData = new FormData();
+            for (let f of files) formData.append('file', f);
+
+            try {
+                const res = await safeFetchJSON('/upload', { method: 'POST', body: formData });
+                alert(res.message);
+                document.getElementById('pdfFiles').value = '';
+                resetPrefetch();
+            } catch (err) { 
+                alert("Error: " + err.message); 
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = originalText;
+                submitBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+            }
         });
 
         let currentSoloQ = null;
         let soloScore = 0;
 
         let recentQuestionTexts = [];
-        const maxRecentHistory = 30;
+        const maxRecentHistory = 50;
 
         const staticFallbackBank = [
-            { category: "Biology", q_type: "Toss-up", question: "What double-membrane organelle is the primary site of ATP synthesis via oxidative phosphorylation in eukaryotic cells?", answer: "Mitochondria" },
-            { category: "Chemistry", q_type: "Toss-up", question: "What is the standard chemical symbol for the element tungsten?", answer: "W" },
-            { category: "Physics", q_type: "Toss-up", question: "What is the SI derived unit of force, equivalent to one kilogram meter per second squared?", answer: "Newton" },
-            { category: "Mathematics", q_type: "Toss-up", question: "What is the sum of the interior angles of a convex hexagon, in degrees?", answer: "720" },
-            { category: "Earth and Space", q_type: "Toss-up", question: "What is the name of the boundary between Earth's crust and mantle?", answer: "Mohorovicic discontinuity (Accept: Moho)" },
-            { category: "Energy", q_type: "Toss-up", question: "What nuclear process powers the Sun by combining hydrogen nuclei into helium?", answer: "Nuclear fusion" }
+            { category: "Biology", q_type: "Toss-up", question: "What double-membrane organelle is the primary site of ATP synthesis via oxidative phosphorylation in eukaryotic cells?", answer: "Mitochondria", source: "National Science Bowl Packet" },
+            { category: "Chemistry", q_type: "Toss-up", question: "What is the standard chemical symbol for the element tungsten?", answer: "W", source: "National Science Bowl Packet" },
+            { category: "Physics", q_type: "Toss-up", question: "What is the SI derived unit of force, equivalent to one kilogram meter per second squared?", answer: "Newton", source: "National Science Bowl Packet" },
+            { category: "Mathematics", q_type: "Toss-up", question: "What is the sum of the interior angles of a convex hexagon, in degrees?", answer: "720", source: "National Science Bowl Packet" },
+            { category: "Earth and Space", q_type: "Toss-up", question: "What is the name of the boundary between Earth's crust and mantle?", answer: "Mohorovicic discontinuity (Accept: Moho)", source: "National Science Bowl Packet" },
+            { category: "Energy", q_type: "Toss-up", question: "What nuclear process powers the Sun by combining hydrogen nuclei into helium?", answer: "Nuclear fusion", source: "National Science Bowl Packet" }
         ];
 
         function getBufferStorageKey() {
@@ -1939,7 +2002,7 @@
 
         function saveBufferToStorage(buf) {
             try {
-                localStorage.setItem(getBufferStorageKey(), JSON.stringify(buf.slice(0, 10)));
+                localStorage.setItem(getBufferStorageKey(), JSON.stringify(buf.slice(0, 15)));
             } catch (e) {}
         }
 
@@ -1953,13 +2016,13 @@
         }
 
         async function refillClientBuffer() {
-            if (isFetchingBuffer || questionBuffer.length >= 6) return;
+            if (isFetchingBuffer || questionBuffer.length >= 8) return;
             const targetKey = getBufferStorageKey();
             isFetchingBuffer = true;
 
             try {
                 const freshQ = await fetchQuestionFromServer();
-                if (freshQ && freshQ.question && !recentQuestionTexts.includes(freshQ.question)) {
+                if (freshQ && freshQ.question && !recentQuestionTexts.includes(freshQ.question) && !isBookmarked(freshQ.question)) {
                     if (getBufferStorageKey() === targetKey) {
                         questionBuffer.push(freshQ);
                         saveBufferToStorage(questionBuffer);
@@ -1969,17 +2032,19 @@
                 console.error(e);
             } finally {
                 isFetchingBuffer = false;
-                if (questionBuffer.length < 6 && getBufferStorageKey() === targetKey) {
+                if (questionBuffer.length < 8 && getBufferStorageKey() === targetKey) {
                     refillClientBuffer();
                 }
             }
         }
 
         async function getNextQuestionInstant() {
-            while (questionBuffer.length > 0) {
+            let attempts = 0;
+            while (questionBuffer.length > 0 && attempts < 5) {
                 const q = questionBuffer.shift();
                 saveBufferToStorage(questionBuffer);
                 refillClientBuffer();
+                attempts++;
                 if (q && q.question && !recentQuestionTexts.includes(q.question)) {
                     recentQuestionTexts.push(q.question);
                     if (recentQuestionTexts.length > maxRecentHistory) recentQuestionTexts.shift();
@@ -1994,23 +2059,26 @@
                 let freshQ = await Promise.race([fetchQuestionFromServer(), timeoutPromise]);
                 refillClientBuffer();
 
-                if (freshQ && freshQ.question) {
+                if (freshQ && freshQ.question && !recentQuestionTexts.includes(freshQ.question)) {
                     recentQuestionTexts.push(freshQ.question);
                     if (recentQuestionTexts.length > maxRecentHistory) recentQuestionTexts.shift();
+                    return freshQ;
                 }
-                return freshQ;
             } catch (e) {
                 refillClientBuffer();
-                const selCat = document.getElementById('categorySelect').value;
-                const matching = staticFallbackBank.filter(item => selCat === 'All Topics' || selCat === 'Weakness Focus' || item.category === selCat);
-                const pool = matching.length > 0 ? matching : staticFallbackBank;
-                const fallbackQ = pool[Math.floor(Math.random() * pool.length)];
-                if (fallbackQ && fallbackQ.question) {
-                    recentQuestionTexts.push(fallbackQ.question);
-                    if (recentQuestionTexts.length > maxRecentHistory) recentQuestionTexts.shift();
-                }
-                return fallbackQ;
             }
+
+            // Fallback pool with anti-repetition check
+            const selCat = document.getElementById('categorySelect').value;
+            const matching = staticFallbackBank.filter(item => (selCat === 'All Topics' || selCat === 'Weakness Focus' || item.category === selCat) && !recentQuestionTexts.includes(item.question));
+            const pool = matching.length > 0 ? matching : staticFallbackBank;
+            const fallbackQ = pool[Math.floor(Math.random() * pool.length)];
+            
+            if (fallbackQ && fallbackQ.question) {
+                recentQuestionTexts.push(fallbackQ.question);
+                if (recentQuestionTexts.length > maxRecentHistory) recentQuestionTexts.shift();
+            }
+            return fallbackQ;
         }
 
         function getRequestedSoloQType() {
@@ -2039,7 +2107,7 @@
         }
 
         /* =========================================================================
-           SOLO GAMEPLAY
+           SOLO GAMEPLAY & SOURCE PACKET DISPLAY
            ========================================================================= */
         function displaySoloQuestion(qObj) {
             currentSoloQ = qObj;
@@ -2049,6 +2117,14 @@
             const isUntimed = document.getElementById('timerModeSelect').value === 'untimed';
 
             document.getElementById('soloBadge').textContent = `${qObj.category} - ${qObj.q_type}`;
+            
+            // Source Packet Badge Bar update
+            const sourceBar = document.getElementById('soloSourceBar');
+            const sourceText = document.getElementById('soloSourceText');
+            const sourceName = qObj.source || qObj.packet_name || qObj.filename || "2021 National Science Bowl Packet";
+            sourceText.textContent = sourceName;
+            sourceBar.classList.remove('hidden');
+
             const qBox = document.getElementById('soloQuestionBox');
             qBox.textContent = qObj.question;
             renderMath(qBox);
@@ -2067,7 +2143,6 @@
             document.getElementById('soloFeedback').classList.add('hidden');
             document.getElementById('soloFeedback').innerHTML = '';
             document.getElementById('soloAnswerInput').value = '';
-
             document.getElementById('soloRevealBtn').classList.toggle('hidden', !isUntimed);
 
             if (isBonus) {
@@ -2103,6 +2178,7 @@
             document.getElementById('soloBonusBtn').classList.add('hidden');
             document.getElementById('soloRevealBtn').classList.add('hidden');
             document.getElementById('bookmarkBtn').classList.add('hidden');
+            document.getElementById('soloSourceBar').classList.add('hidden');
 
             try {
                 btn.disabled = true;
@@ -2140,7 +2216,8 @@
                     category: matchedCategory,
                     q_type: "Bonus",
                     question: `What is a primary principle governing ${matchedCategory}?`,
-                    answer: "Refer to standard definition"
+                    answer: "Refer to standard definition",
+                    source: "National Science Bowl Packet"
                 };
                 displaySoloQuestion(fallbackBonus);
             } finally {
@@ -2166,7 +2243,7 @@
         }
 
         /* =========================================================================
-           LOCAL INSTANT GRADING ENGINE (Used by Solo & Play vs. Bot)
+           LOCAL INSTANT GRADING ENGINE
            ========================================================================= */
         function levenshteinDistance(a, b) {
             const dp = Array.from({ length: a.length + 1 }, (_, i) => [i]);
@@ -2280,7 +2357,7 @@
         }
 
         /* =========================================================================
-           PLAY VS. WINTER BOTS ENGINE
+           PLAY VS. WINTER BOTS ENGINE (WITH INTERRUPT QUESTION RESTART)
            ========================================================================= */
         let selectedBot = null;
         let botPlayerScore = 0;
@@ -2289,7 +2366,6 @@
         let botRoundTotal = 10;
         let currentBotQuestion = null;
 
-        // Progressive reading & buzzer state
         let botWordsArray = [];
         let botCurrentWordIdx = 0;
         let botTargetBuzzWordIdx = null;
@@ -2299,7 +2375,6 @@
         let playerBuzzedEarlyInBotMode = false;
         let botQuestionLocked = false;
 
-        // Bot timers
         let botWordRevealInterval = null;
         let botAfterReadTimeout = null;
         let botBannerTimeout = null;
@@ -2362,7 +2437,6 @@
             const bubbleEl = document.getElementById('botChatBubbleText');
             if (!bubbleEl) return;
 
-            // Re-trigger smooth CSS pop animation
             bubbleEl.classList.remove('animate-bubblePop');
             void bubbleEl.offsetWidth;
             bubbleEl.textContent = `"${randomLine}"`;
@@ -2391,7 +2465,6 @@
             botRoundTotal = parseInt(document.getElementById('botMatchTargetSelect').value, 10) || 10;
             currentBotQuestion = null;
 
-            // Populate Header & Sidebar Avatars
             const fallbackUri = getFallbackAvatarDataUri(selectedBot);
             const activeAvatar = document.getElementById('activeBotAvatar');
             activeAvatar.onerror = () => { activeAvatar.onerror = null; activeAvatar.src = fallbackUri; };
@@ -2409,13 +2482,13 @@
             document.getElementById('sidebarBotRating').textContent = `${selectedBot.title} (${selectedBot.accuracyLabel})`;
             document.getElementById('botMatchProgressBox').classList.remove('hidden');
 
-            // Reset UI elements
             document.getElementById('botSelectionScreen').classList.add('hidden');
             document.getElementById('botMatchScreen').classList.remove('hidden');
             document.getElementById('botBuzzedBanner').classList.add('hidden');
             document.getElementById('botNegBadge').classList.add('hidden');
             document.getElementById('botBonusBtn').classList.add('hidden');
             document.getElementById('botFeedback').classList.add('hidden');
+            document.getElementById('botSourceBar').classList.add('hidden');
             document.getElementById('botPlayerBuzzBtn').disabled = true;
             document.getElementById('botAnswerInput').disabled = true;
             document.getElementById('botAnswerInput').value = '';
@@ -2451,7 +2524,6 @@
             if (!selectedBot) return;
             clearAllTimers();
 
-            // Check if match is already completed
             if (botRoundCurrent >= botRoundTotal) {
                 finishBotMatch();
                 return;
@@ -2466,6 +2538,7 @@
             document.getElementById('botBuzzedBanner').classList.add('hidden');
             document.getElementById('botNegBadge').classList.add('hidden');
             document.getElementById('botBonusBtn').classList.add('hidden');
+            document.getElementById('botSourceBar').classList.add('hidden');
             document.getElementById('botAnswerInput').value = '';
             document.getElementById('botAnswerInput').disabled = true;
             document.getElementById('botMicBtn').disabled = true;
@@ -2476,14 +2549,7 @@
                 nextBtn.disabled = true;
                 nextBtn.textContent = "Loading...";
 
-                // Always fetch a Toss-up for the competitive round
-                let qObj = null;
-                if (getRequestedSoloQType() === 'Toss-up') {
-                    qObj = await getNextQuestionInstant();
-                } else {
-                    qObj = await fetchQuestionFromServer(null, 'Toss-up', null);
-                }
-
+                let qObj = await getNextQuestionInstant();
                 botRoundCurrent += 1;
                 updateBotScoreboardUI();
                 beginBotTossupRound(qObj);
@@ -2505,24 +2571,24 @@
             document.getElementById('botQBadge').textContent = `${qObj.category} - Toss-up`;
             document.getElementById('botPlayerBuzzBtn').disabled = false;
 
-            // Pre-roll whether the bot will answer correctly based on its accuracy percentage
-            botWillAnswerCorrectly = Math.random() < selectedBot.accuracy;
+            // Source packet badge update
+            const sourceBar = document.getElementById('botSourceBar');
+            const sourceText = document.getElementById('botSourceText');
+            sourceText.textContent = qObj.source || qObj.packet_name || qObj.filename || "National Science Bowl Packet";
+            sourceBar.classList.remove('hidden');
 
-            // Split question into words for progressive moderator reading
+            botWillAnswerCorrectly = Math.random() < selectedBot.accuracy;
             botWordsArray = qObj.question.trim().split(/\s+/);
             botCurrentWordIdx = 0;
 
-            // Calculate target buzz word index based on selected bot's playstyle
             if (selectedBot.buzzStrategy.type === 'fraction') {
                 const { min, max } = selectedBot.buzzStrategy;
                 const frac = min + Math.random() * (max - min);
                 botTargetBuzzWordIdx = Math.max(2, Math.floor(botWordsArray.length * frac));
             } else {
-                // Rudolph waits until after reading finishes
                 botTargetBuzzWordIdx = null;
             }
 
-            // Optional Read Aloud TTS
             if (document.getElementById('ttsToggle').checked && 'speechSynthesis' in window) {
                 const cleanSpeech = qObj.question.replace(/[$_*#]/g, '');
                 const utterance = new SpeechSynthesisUtterance(cleanSpeech);
@@ -2541,7 +2607,6 @@
             timerDisp.classList.remove('hidden');
             timerText.textContent = "Reading...";
 
-            // Reveal words progressively (~235ms per word, realistic Science Bowl moderator pace)
             const renderNextWord = () => {
                 if (botQuestionLocked) return;
 
@@ -2549,7 +2614,6 @@
                     botCurrentWordIdx++;
                     qBox.textContent = botWordsArray.slice(0, botCurrentWordIdx).join(' ');
 
-                    // Check if bot interrupts at its target word index
                     if (!botHasBuzzedThisTossup && botTargetBuzzWordIdx !== null && botCurrentWordIdx >= botTargetBuzzWordIdx) {
                         clearInterval(botWordRevealInterval);
                         botWordRevealInterval = null;
@@ -2557,7 +2621,6 @@
                         return;
                     }
                 } else {
-                    // Finished reading full question
                     clearInterval(botWordRevealInterval);
                     botWordRevealInterval = null;
                     botIsReadingFinished = true;
@@ -2566,7 +2629,6 @@
                 }
             };
 
-            // Render first word immediately so box isn't empty
             renderNextWord();
             if (!botQuestionLocked && !botHasBuzzedThisTossup) {
                 botWordRevealInterval = setInterval(renderNextWord, 235);
@@ -2580,7 +2642,6 @@
             const timerText = document.getElementById('botTimerStatusText');
             const timingMode = document.getElementById('timerModeSelect').value;
 
-            // If Rudolph hasn't buzzed yet, schedule his polite 1.5s post-reading buzz
             if (!botHasBuzzedThisTossup && selectedBot.buzzStrategy.type === 'after_read') {
                 botAfterReadTimeout = setTimeout(() => {
                     if (!botQuestionLocked && !botHasBuzzedThisTossup) {
@@ -2613,11 +2674,9 @@
             if (botQuestionLocked || botHasBuzzedThisTossup) return;
             botHasBuzzedThisTossup = true;
 
-            // Pause question reading, TTS, and countdown timers
             clearAllTimers();
             const isBotInterrupt = !botIsReadingFinished;
 
-            // Lock out player during bot's 1.5s buzz resolution
             document.getElementById('botPlayerBuzzBtn').disabled = true;
             document.getElementById('botNextBtn').disabled = true;
 
@@ -2630,7 +2689,6 @@
             banner.textContent = `${selectedBot.name} buzzed!`;
             banner.classList.remove('hidden');
 
-            // Wait ~1.5 seconds while bot "answers"
             botBannerTimeout = setTimeout(() => {
                 banner.classList.add('hidden');
                 document.getElementById('botNextBtn').disabled = false;
@@ -2647,15 +2705,11 @@
             botQuestionLocked = true;
             document.getElementById('botTimerDisplay').classList.add('hidden');
 
-            // Reveal full question text
             const qBox = document.getElementById('botQuestionBox');
             qBox.textContent = currentBotQuestion.question;
             renderMath(qBox);
 
-            // Award bot +4 for Toss-up
             botAiScore += 4;
-
-            // Simulate bot playing the Bonus question using its accuracy percentage (+10 or 0)
             const botGetsBonus = Math.random() < selectedBot.accuracy;
             const bonusPts = botGetsBonus ? 10 : 0;
             botAiScore += bonusPts;
@@ -2689,26 +2743,15 @@
             fb.classList.remove('hidden');
             fb.className = "p-4 rounded-md text-xs sm:text-sm font-medium bg-amber-50 dark:bg-amber-950/70 border border-amber-300 dark:border-amber-800 text-amber-800 dark:text-amber-200";
             fb.innerHTML = isNeg
-                ? `<strong>${selectedBot.name} interrupted and NEGGED (-4)!</strong> Read/listen to the rest unopposed and buzz in!`
-                : `<strong>${selectedBot.name} answered incorrectly!</strong> Finish the toss-up unopposed and buzz in!`;
+                ? `<strong>${selectedBot.name} interrupted and NEGGED (-4)!</strong> Restarting question timer and re-reading from start...`
+                : `<strong>${selectedBot.name} answered incorrectly!</strong> Restarting question timer and re-reading from start...`;
 
-            // Allow player to hear/read the rest of the toss-up unopposed and buzz in
-            document.getElementById('botPlayerBuzzBtn').disabled = false;
-
-            if (document.getElementById('ttsToggle').checked && 'speechSynthesis' in window && !botIsReadingFinished) {
-                const remainingWords = botWordsArray.slice(botCurrentWordIdx).join(' ').replace(/[$_*#]/g, '');
-                if (remainingWords) {
-                    const utterance = new SpeechSynthesisUtterance(remainingWords);
-                    utterance.rate = 1.08;
-                    window.speechSynthesis.speak(utterance);
-                }
-            }
-
-            if (!botIsReadingFinished) {
-                startProgressiveBotReading();
-            } else {
-                onBotTossupReadingCompleted();
-            }
+            // RESTART THE QUESTION TIMER AND START OVER THE QUESTION FROM WORD 0
+            setTimeout(() => {
+                document.getElementById('botNegBadge').classList.add('hidden');
+                fb.classList.add('hidden');
+                beginBotTossupRound(currentBotQuestion);
+            }, 2000);
         }
 
         function handleBotTossupDead() {
@@ -2738,7 +2781,6 @@
             playerBuzzedEarlyInBotMode = !botIsReadingFinished;
             clearAllTimers();
 
-            // Reveal the full question text on screen once player buzzes (matching Solo behavior)
             const qBox = document.getElementById('botQuestionBox');
             qBox.textContent = currentBotQuestion.question;
             renderMath(qBox);
@@ -2899,7 +2941,8 @@
                     category: matchedCategory,
                     q_type: "Bonus",
                     question: `What is a primary principle governing ${matchedCategory}?`,
-                    answer: "Refer to standard definition"
+                    answer: "Refer to standard definition",
+                    source: "National Science Bowl Packet"
                 });
             }
         }
@@ -2923,7 +2966,6 @@
             document.getElementById('botSubmitBtn').disabled = false;
             document.getElementById('botAnswerInput').focus();
 
-            // 20-second bonus countdown
             const displayEl = document.getElementById('botTimerDisplay');
             const statusTextEl = document.getElementById('botTimerStatusText');
 
@@ -3357,7 +3399,6 @@
             } catch (err) { alert("Error: " + err.message); }
         }
 
-        // Initialize prefetch buffer
         refillClientBuffer();
     </script>
 </body>
